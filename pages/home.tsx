@@ -16,7 +16,7 @@ import {SvgUri} from 'react-native-svg';
 export default function HomeScreen({navigation}) {
   const currentVersion = 'demo_1.2';
   let checkUpdate = () => {
-    fetch('http://43.143.213.226:8085/checkUpdate', {
+    fetch('http://43.143.213.226:8088/checkUpdate', {
       //不能直接使用 wmzspace.space域名, 因为 域名开启了https防窜站
       method: 'POST',
       mode: 'cros',

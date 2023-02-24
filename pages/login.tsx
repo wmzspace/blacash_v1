@@ -45,7 +45,7 @@ export default function LoginScreen({navigation}) {
   const [passwordIsValid, setPasswordValidation] = React.useState(false);
 
   const sendAjax = () => {
-    fetch('http://43.143.213.226:8085/login', {
+    fetch('http://43.143.213.226:8088/login', {
       method: 'POST',
       mode: 'cors',
       //same-origin - 同源请求，跨域会报error
@@ -137,7 +137,7 @@ export default function LoginScreen({navigation}) {
             />
             <TextInput
               style={style.textInput}
-              placeholder="用户名"
+              placeholder="邮箱"
               clearButtonMode="always"
               selectionColor="skyblue"
               maxLength={19}

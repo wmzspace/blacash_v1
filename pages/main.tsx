@@ -101,7 +101,7 @@ export default function MainScreen({route, navigation}) {
   };
 
   const refreshData = () => {
-    fetch('http://43.143.213.226:8085/refresh', {
+    fetch('http://43.143.213.226:8088/refresh', {
       method: 'GET',
     })
       .then(res => {
@@ -191,7 +191,7 @@ export default function MainScreen({route, navigation}) {
                 //   time: (new Date()).toLocaleDateString() + ' ' + (new Date()).toLocaleTimeString(),
                 //   message:"!!!\n!\n!!!"
                 // });
-                fetch('http://43.143.213.226:8085/send', {
+                fetch('http://43.143.213.226:8088/send', {
                   method: 'POST',
                   mode: 'cors', //之前是no-cors
                   body: `author=${route.params.userName}&message=${message}&sender=${route.params.userName}`, // 上传到后端的数据

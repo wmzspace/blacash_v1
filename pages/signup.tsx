@@ -238,7 +238,7 @@ export default function SignupScreen({navigation}) {
   };
 
   const sendAjax = () => {
-    fetch('http://43.143.213.226:8085/signup', {
+    fetch('http://43.143.213.226:8088/signup', {
       //不能直接使用 wmzspace.space域名, 因为 域名开启了https防窜站
       method: 'POST',
       mode: 'cors', //之前是no-cors
