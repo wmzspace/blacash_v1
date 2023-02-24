@@ -8,6 +8,7 @@ import {
   useColorScheme,
   Alert,
   PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
@@ -18,20 +19,20 @@ import Geolocation from 'react-native-geolocation-service';
 const radioButtonsData = [
   {
     id: 1, //主键是必须有的
-    label: '男',
-    value: 'male',
+    label: '是',
+    value: true,
   },
   {
     id: 2,
-    label: '女',
-    value: 'female',
+    label: '否',
+    value: false,
   },
-  {
-    id: 3,
-    label: '?',
-    value: null,
-    selected: true,
-  },
+  // {
+  //   id: 3,
+  //   label: '?',
+  //   value: null,
+  //   selected: true,
+  // },
 ];
 
 const style = StyleSheet.create({
@@ -63,11 +64,13 @@ const style = StyleSheet.create({
 export default function SignupScreen({navigation}) {
   const [userName, setUserName] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [gender, setGender] = React.useState(null);
-  const [age, setAge] = React.useState(null);
   const [address, setAddress] = React.useState(null);
+  const [email, setEmail] = React.useState(null);
+  const [location, setLocation] = React.useState(null);
   const [userNameIsValid, setUserNameValidation] = React.useState(false);
   const [passwordIsValid, setPasswordValidation] = React.useState(false);
+  //TODO: email and address is valid
+  const [readNotice, setReadNotice] = React.useState(false);
   const userInfo = {userName: userName, password: password};
   const [radioButtons, setRadioButtons] = React.useState(radioButtonsData);
 
@@ -75,7 +78,7 @@ export default function SignupScreen({navigation}) {
     setRadioButtons(radioButtonsArray);
     for (let option of radioButtonsArray) {
       if (option.selected) {
-        setGender(option.value);
+        setReadNotice(option.value);
       }
     }
   }
@@ -95,6 +98,9 @@ export default function SignupScreen({navigation}) {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
+            buttonNegative: undefined,
+            buttonNeutral: undefined,
+            buttonPositive: '',
             title: '定位请求',
             message: 'YeChat需要申请系统的定位权限',
           },
@@ -136,10 +142,10 @@ export default function SignupScreen({navigation}) {
         geocoder(currentLongitude, currentLatitude);
       },
       error => {
-        if (error.message == 'No location provider available.') {
+        if (error.message === 'No location provider available.') {
           setLocationStatus('点击左侧"位置"刷新)');
-          Alert.alert('定位失败', `请检查GPS是否开启`);
-        } else if (error.message == 'Location permission was not granted.') {
+          Alert.alert('定位失败', '请检查GPS是否开启');
+        } else if (error.message === 'Location permission was not granted.') {
           setLocationStatus('点击左侧"位置"刷新)');
           Alert.alert('定位失败', '用户拒绝定位权限, 请尝试在设置中开启权限');
         } else {
@@ -201,23 +207,21 @@ export default function SignupScreen({navigation}) {
       .then(res => {
         if (res.ok) {
           res.json().then(responseData => {
-            console.log(responseData['regeocode']['formatted_address']);
-            console.log(
-              responseData['regeocode']['addressComponent']['province'],
+            console.log(responseData.regeocode.formatted_address);
+            console.log(responseData.regeocode.addressComponent.province);
+            console.log(responseData.regeocode.addressComponent.city);
+            console.log(responseData.regeocode.addressComponent.district);
+            setFormattedAddress(responseData.regeocode.formatted_address);
+            setProvince(responseData.regeocode.addressComponent.province);
+            setCity(responseData.regeocode.addressComponent.city);
+            setDistrict(responseData.regeocode.addressComponent.district);
+            setLocation(
+              responseData.regeocode.addressComponent.province +
+                ' ' +
+                responseData.regeocode.addressComponent.city +
+                ' ' +
+                responseData.regeocode.addressComponent.district,
             );
-            console.log(responseData['regeocode']['addressComponent']['city']);
-            console.log(
-              responseData['regeocode']['addressComponent']['district'],
-            );
-            setFormattedAddress(responseData['regeocode']['formatted_address']);
-            setProvince(
-              responseData['regeocode']['addressComponent']['province'],
-            );
-            setCity(responseData['regeocode']['addressComponent']['city']);
-            setDistrict(
-              responseData['regeocode']['addressComponent']['district'],
-            );
-            setAddress(responseData['regeocode']['addressComponent']['province'] + ' ' + responseData['regeocode']['addressComponent']['city'] + ' ' + responseData['regeocode']['addressComponent']['district'])
           });
         } else {
           Alert.alert('请求失败', 'error', [
@@ -242,7 +246,8 @@ export default function SignupScreen({navigation}) {
       //no-cors - 默认，可以请求其它域的资源，不能访问response内的属性
       //cros - 允许跨域，可以获取第三方数据，必要条件是访问的服务允许跨域访问
       //navigate - 支持导航的模式。该navigate值仅用于HTML导航。导航请求仅在文档之间导航时创建。
-      body: `username=${userInfo.userName}&password=${userInfo.password}&gender=${gender}&age=${age}&address=${address}&province=${province}&city=${city}&district=${district}&longitude=${currentLongitude}&latitude=${currentLatitude}`, // 上传到后端的数据
+      //TODO: age - > email
+      body: `name=${userInfo.userName}&password=${userInfo.password}&address=${address}&email=${email}&location=${location}&province=${province}&city=${city}&district=${district}&longitude=${currentLongitude}&latitude=${currentLatitude}`, // 上传到后端的数据
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -266,7 +271,7 @@ export default function SignupScreen({navigation}) {
                   text: '确定',
                   onPress: () => {
                     console.log('OK Pressed!');
-                    if (responseData.substring(0, 4) == '注册成功') {
+                    if (responseData.substring(0, 4) === '注册成功') {
                       navigation.navigate('Home');
                     }
                   },
@@ -300,7 +305,7 @@ export default function SignupScreen({navigation}) {
       <View style={{alignItems: 'center'}}>
         {/* <View style={{alignItems: 'center'}}> */}
         <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
-          易聊账号注册
+          BlaCash 账号注册
         </Text>
         <View>
           <View style={style.inputWrap}>
@@ -322,7 +327,6 @@ export default function SignupScreen({navigation}) {
               }}
             />
           </View>
-
           <View style={style.inputWrap}>
             <MaterialCommunityIcons name="lock" size={30} style={style.icon} />
             <TextInput
@@ -339,28 +343,37 @@ export default function SignupScreen({navigation}) {
               }}
             />
           </View>
-
           <View style={style.inputWrap}>
-            <Text>年龄: </Text>
+            <Text>邮箱: </Text>
             <TextInput
               style={style.textInput}
-              placeholder="(选填)"
+              placeholder="必填*"
               clearButtonMode="always"
-              maxLength={2}
-              onChangeText={age => {
-                setAge(age);
+              maxLength={30}
+              onChangeText={email_ => {
+                setEmail(email_);
               }}
             />
           </View>
-
           <View style={style.inputWrap}>
             <Text onPress={requestLocationPermission}>位置: </Text>
             <TextInput
               style={style.textInput}
               placeholder={locationStatus}
-              value={
-                province ? province + ' ' + city + ' ' + district : ''
-              }
+              value={province ? province + ' ' + city + ' ' + district : ''}
+              clearButtonMode="always"
+              maxLength={100}
+              onChangeText={_location => {
+                setLocation(_location);
+              }}
+            />
+          </View>
+          <View style={style.inputWrap}>
+            <Text>钱包地址: </Text>
+            <TextInput
+              style={style.textInput}
+              placeholder="必填*"
+              // value={province ? province + ' ' + city + ' ' + district : ''}
               clearButtonMode="always"
               maxLength={100}
               onChangeText={_address => {
@@ -368,9 +381,9 @@ export default function SignupScreen({navigation}) {
               }}
             />
           </View>
-
+          {/* TODO: 阅读声明的超链接*/}
           <View style={style.inputWrap}>
-            <Text>性别: </Text>
+            <Text>已阅读声明: </Text>
             <RadioGroup
               radioButtons={radioButtons}
               onPress={onPressRadioButton}
@@ -378,7 +391,6 @@ export default function SignupScreen({navigation}) {
               layout="row"
             />
           </View>
-
           <Text
             style={{
               alignContent: 'flex-start',

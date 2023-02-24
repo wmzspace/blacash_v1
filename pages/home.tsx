@@ -11,10 +11,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import * as Animatable from 'react-native-animatable';
 import styles from '../styles';
+import {SvgUri} from 'react-native-svg';
 
 export default function HomeScreen({navigation}) {
   const currentVersion = 'demo_1.2';
-  checkUpdate = () => {
+  let checkUpdate = () => {
     fetch('http://43.143.213.226:8085/checkUpdate', {
       //不能直接使用 wmzspace.space域名, 因为 域名开启了https防窜站
       method: 'POST',
@@ -86,10 +87,18 @@ export default function HomeScreen({navigation}) {
       source={require('../images/home.jpg')}
       style={[
         {
-          resizeMode: 'cover',
+          // resizeMode: 'cover',
         },
         styles.container,
       ]}>
+
+      {/*<SvgUri*/}
+      {/*  width="100%"*/}
+      {/*  height="100%"*/}
+      {/*  uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/debian.svg"*/}
+      {/*  // uri="images/svg/home_bg.html"*/}
+      {/*/>*/}
+
       <StatusBarComp isDarkStyle="true" />
       <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
         <Text
@@ -101,7 +110,7 @@ export default function HomeScreen({navigation}) {
             flex: 1,
             fontFamily: '',
           }}>
-          YeChat
+          BlaCash
         </Text>
 
         <Animatable.View

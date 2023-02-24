@@ -100,7 +100,7 @@ export default function MainScreen({route, navigation}) {
     );
   };
 
-  const refreshData =() => {
+  const refreshData = () => {
     fetch('http://43.143.213.226:8085/refresh', {
       method: 'GET',
     })
@@ -140,14 +140,14 @@ export default function MainScreen({route, navigation}) {
 
   refreshData();
   // if (route.params.needRefresh) {
-    
+
   //   refreshData();
   //   navigation.navigate('Main', {
   //     userName: route.params.userName,
   //     needRefresh:false
   //   });
   // }
-return (
+  return (
     <View
       style={[
         styles.container,
@@ -162,7 +162,7 @@ return (
             borderBottomWidth: 1,
           }}>
           <View style={styles.inputWrap}>
-            <Text></Text>
+            <Text />
             <TextInput
               style={styles.textInput}
               placeholder="我也说一句:"
@@ -260,9 +260,9 @@ return (
                 opacity: 0.6,
               }}>
               <Text style={{}}>发送</Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
           </View>
-          <Text style={{alignSelf:'center'}}>下拉刷新</Text>
+          <Text style={{alignSelf: 'center'}}>下拉刷新</Text>
         </View>
 
         <FlatList
@@ -271,10 +271,9 @@ return (
           keyExtractor={item => item.id}
           extraData={selectedId}
           onRefresh={() => {
-  
             navigation.navigate('Main', {
               userName: route.params.userName,
-              needRefresh:false
+              needRefresh: false,
             });
           }}
           refreshing={false}

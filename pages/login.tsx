@@ -47,12 +47,12 @@ export default function LoginScreen({navigation}) {
   const sendAjax = () => {
     fetch('http://43.143.213.226:8085/login', {
       method: 'POST',
-      mode: 'cros',
+      mode: 'cors',
       //same-origin - 同源请求，跨域会报error
       //no-cors - 默认，可以请求其它域的资源，不能访问response内的属性
       //cros - 允许跨域，可以获取第三方数据，必要条件是访问的服务允许跨域访问
       //navigate - 支持导航的模式。该navigate值仅用于HTML导航。导航请求仅在文档之间导航时创建。
-      body: `username=${userName}&password=${password}`, // 上传到后端的数据
+      body: `email=${userName}&password=${password}`, // 上传到后端的数据
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -91,7 +91,7 @@ export default function LoginScreen({navigation}) {
                       onPress: () => {
                         navigation.navigate('Main', {
                           userName: userName,
-                          needRefresh:true
+                          needRefresh: true,
                         });
                       },
                     },
@@ -126,7 +126,7 @@ export default function LoginScreen({navigation}) {
       <View style={{alignItems: 'center'}}>
         {/* <View style={{alignItems: 'center'}}> */}
         <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
-          易聊账号登录
+          BlaCash 登录
         </Text>
         <View>
           <View style={style.inputWrap}>
