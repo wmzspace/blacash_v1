@@ -1,0 +1,32 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "PC",
+            "database": "mysql",
+            "username": "root",
+            "password": "wmz030907"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "PC-service",
+            "database": "mysql",
+            "username": "service",
+            "password": "service"
+        }
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
+}
