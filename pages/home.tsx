@@ -6,6 +6,9 @@ import {
   useColorScheme,
   Linking,
   BackHandler,
+  ScrollView,
+  View,
+  Image,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StatusBarComp} from '../@components/StatusBarComp';
@@ -83,36 +86,30 @@ export default function HomeScreen({navigation}) {
   checkUpdate();
 
   return (
-    <ImageBackground
-      source={require('../images/home.jpg')}
-      style={[
-        {
-          // resizeMode: 'cover',
-        },
-        styles.container,
-      ]}>
-
-      {/*<SvgUri*/}
-      {/*  width="100%"*/}
-      {/*  height="100%"*/}
-      {/*  uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/debian.svg"*/}
-      {/*  // uri="images/svg/home_bg.html"*/}
-      {/*/>*/}
-
+    <View style={[styles.container, {backgroundColor: 'white'}]}>
       <StatusBarComp isDarkStyle="true" />
-      <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
-        <Text
-          style={{
-            color: '#fcfcfc',
-            textAlign: 'center',
-            marginTop: 100,
-            fontSize: 45,
-            flex: 1,
-            fontFamily: '',
-          }}>
-          BlaCash
-        </Text>
 
+      <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
+        {/*<Text*/}
+        {/*  style={{*/}
+        {/*    color: '#fcfcfc',*/}
+        {/*    textAlign: 'center',*/}
+        {/*    marginTop: 100,*/}
+        {/*    fontSize: 45,*/}
+        {/*    flex: 1,*/}
+        {/*    fontFamily: '',*/}
+        {/*  }}>*/}
+        {/*  BlaCash*/}
+        {/*</Text>*/}
+        <Image
+          style={{
+            flex: 1,
+            alignSelf: 'center',
+            resizeMode: 'contain',
+            width: 600,
+          }}
+          source={require('../images/logo_transparent.png')}
+        />
         <Animatable.View
           style={[styles.inlineFlex, {justifyContent: 'space-between'}]}
           animation="fadeInUp"
@@ -147,6 +144,6 @@ export default function HomeScreen({navigation}) {
           </TouchableOpacity>
         </Animatable.View>
       </Animatable.View>
-    </ImageBackground>
+    </View>
   );
 }
