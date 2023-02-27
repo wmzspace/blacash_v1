@@ -1,6 +1,6 @@
-# Yechat 易聊
+# Blacash
 
-## *Yechat 项目简介*
+## *Blacash 项目简介*
 
 ### 语言和框架
 
@@ -35,11 +35,11 @@
 
 * serverTemp.js
 
-## *Yechat 调试步骤*
+## *Blacash 调试步骤*
 
 ### 克隆该项目到本地
 
-git clone [https://github.com/wmzspace/yechat.git](https://github.com/wmzspace/yechat.git)
+git clone [https://github.com/wmzspace/yechat.git](https://github.com/wmzspace/blacash.git)
 
 ### IDEA工作区配置
 
@@ -102,6 +102,6 @@ npx react-native run-android
 
 ## *成品展示*
 
-![1672651951048](image/REAME/1672651951048.jpg)![1672651986134](image/REAME/1672651986134.jpg)
+[//]: # (![1672651951048]&#40;image/REAME/1672651951048.jpg&#41;![1672651986134]&#40;image/REAME/1672651986134.jpg&#41;)
 
-![1672651999478](image/REAME/1672651999478.jpg)![1672652006327](image/REAME/1672652006327.jpg)
+[//]: # (![1672651999478]&#40;image/REAME/1672651999478.jpg&#41;![1672652006327]&#40;image/REAME/1672652006327.jpg&#41;)
