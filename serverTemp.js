@@ -249,6 +249,18 @@ app.get('/refresh', function (req, res) {
   });
 });
 
+app.get('/nftimg', function (req, res) {
+  connection.query('select * from nftimg', function (err, result) {
+    if (err) {
+      console.log('[SELECT ERROR] - ', err.message);
+      return;
+    }
+
+    res.end(JSON.stringify(result));
+  });
+});
+// });
+
 app.listen(8085, function () {
   console.log('应用实例，访问地址为 http://127.0.0.1:8085');
 });

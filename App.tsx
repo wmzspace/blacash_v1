@@ -17,7 +17,7 @@ export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Main">
           <Stack.Screen
             name="Home"
             component={HomeScreen}
