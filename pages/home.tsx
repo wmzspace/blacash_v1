@@ -47,7 +47,7 @@ export default function HomeScreen({navigation}) {
             //.formData()    // FormData
             .then(responseData => {
               //从后端返回的数据(res.end())
-              if (responseData != '1') {
+              if (responseData !== '1') {
                 Alert.alert('检查到新版本', responseData, [
                   {
                     text: '退出',
@@ -63,7 +63,7 @@ export default function HomeScreen({navigation}) {
               }
             });
         } else {
-          Alert.alert('无法进入YeChat', '检查更新失败', [
+          Alert.alert('无法进入Blacash', '检查更新失败', [
             {
               text: '退出',
               onPress: () => {
@@ -153,3 +153,5 @@ export default function HomeScreen({navigation}) {
     </PaperProvider>
   );
 }
+
+

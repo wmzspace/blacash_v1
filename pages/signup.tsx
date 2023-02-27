@@ -8,7 +8,13 @@ import {
   Platform,
 } from 'react-native';
 
-import {Text, TextInput, RadioButton, HelperText} from 'react-native-paper';
+import {
+  Text,
+  TextInput,
+  RadioButton,
+  HelperText,
+  useTheme,
+} from 'react-native-paper';
 
 import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
@@ -16,6 +22,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import RadioGroup from 'react-native-radio-buttons-group';
 import Geolocation from 'react-native-geolocation-service';
 import {serverIPP} from '../values/strings';
+import {PreferencesContext} from '../context/preference';
 
 const radioButtonsData = [
   {
@@ -70,7 +77,6 @@ export default function SignupScreen({navigation}) {
   const [location, setLocation] = React.useState(null);
   const [userNameIsValid, setUserNameValidation] = React.useState(false);
   const [passwordIsValid, setPasswordValidation] = React.useState(false);
-  //TODO: email and address is valid
   const [readNotice, setReadNotice] = React.useState('');
   const userInfo = {userName: userName, password: password};
   const [radioButtons, setRadioButtons] = React.useState(radioButtonsData);
@@ -247,7 +253,6 @@ export default function SignupScreen({navigation}) {
       //no-cors - 默认，可以请求其它域的资源，不能访问response内的属性
       //cros - 允许跨域，可以获取第三方数据，必要条件是访问的服务允许跨域访问
       //navigate - 支持导航的模式。该navigate值仅用于HTML导航。导航请求仅在文档之间导航时创建。
-      //TODO: age - > email
       body: `name=${userInfo.userName}&password=${userInfo.password}&address=${address}&email=${email}&location=${location}&province=${province}&city=${city}&district=${district}&longitude=${currentLongitude}&latitude=${currentLatitude}`, // 上传到后端的数据
       headers: {
         Accept: 'application/json',
@@ -293,6 +298,8 @@ export default function SignupScreen({navigation}) {
       });
   };
 
+  const theme = useTheme();
+  const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
   return (
     <View
       style={[
@@ -311,6 +318,8 @@ export default function SignupScreen({navigation}) {
           <TextInput
             style={style.textInput}
             placeholder="用户名*"
+            placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
+            underlineColor={isThemeDark ? 'gray' : 'rgba(47,100,125,0.26)'}
             clearButtonMode="always"
             selectionColor="skyblue"
             maxLength={19}
@@ -330,6 +339,8 @@ export default function SignupScreen({navigation}) {
           <TextInput
             style={style.textInput}
             placeholder="密码*"
+            placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
+            underlineColor={isThemeDark ? 'gray' : 'rgba(47,100,125,0.26)'}
             secureTextEntry={true}
             clearButtonMode="always"
             selectionColor="red"
@@ -350,6 +361,8 @@ export default function SignupScreen({navigation}) {
           <TextInput
             style={style.textInput}
             placeholder="邮箱*"
+            placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
+            underlineColor={isThemeDark ? 'gray' : 'rgba(47,100,125,0.26)'}
             clearButtonMode="always"
             maxLength={30}
             onChangeText={email_ => {
@@ -374,6 +387,8 @@ export default function SignupScreen({navigation}) {
             <TextInput
               style={style.textInput}
               placeholder={locationStatus}
+              placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
+              // underlineColor={isThemeDark ? 'gray' : 'rgba(47,100,125,0.26)'}
               value={province ? province + ' ' + city + ' ' + district : ''}
               clearButtonMode="always"
               maxLength={100}
@@ -388,6 +403,7 @@ export default function SignupScreen({navigation}) {
             <TextInput
               style={style.textInput}
               placeholder="必填*"
+              placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
               // value={province ? province + ' ' + city + ' ' + district : ''}
               clearButtonMode="always"
               maxLength={100}
@@ -415,11 +431,11 @@ export default function SignupScreen({navigation}) {
               value={readNotice}>
               <View style={[styles.inlineFlex]}>
                 <View style={[styles.inlineFlex]}>
-                  <Text style={{paddingTop: 7}}>是</Text>
+                  <Text style={{paddingTop: 7, color: 'gray'}}>是</Text>
                   <RadioButton value="yes" />
                 </View>
                 <View style={styles.inlineFlex}>
-                  <Text style={{paddingTop: 7}}>否</Text>
+                  <Text style={{paddingTop: 7, color: 'gray'}}>否</Text>
                   <RadioButton value="no" />
                 </View>
               </View>

@@ -15,6 +15,8 @@ import {
   TextInput,
   Provider as PaperProvider,
   HelperText,
+  useTheme,
+  Button,
 } from 'react-native-paper';
 
 import {StatusBarComp} from '../@components/StatusBarComp';
@@ -22,6 +24,7 @@ import styles from '../styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {theme} from '../ui/themes';
 import {serverIPP} from '../values/strings';
+import {PreferencesContext} from '../context/preference';
 
 const style = StyleSheet.create({
   inputWrap: {
@@ -126,115 +129,122 @@ export default function LoginScreen({navigation}) {
       });
   };
 
+  const theme = useTheme();
+  const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+
   return (
-    <PaperProvider theme={theme}>
-      <View style={[styles.container]}>
-        <StatusBarComp />
-        <View style={{alignItems: 'center'}}>
-          {/* <View style={{alignItems: 'center'}}> */}
-          <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
-            BlaCash 登录
+    <View style={[styles.container]}>
+      <StatusBarComp isDarkStyle={isThemeDark} />
+      <View style={{alignItems: 'center'}}>
+        {/* <View style={{alignItems: 'center'}}> */}
+        <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
+          BlaCash 登录
+        </Text>
+        <View>
+          {/*<MaterialCommunityIcons*/}
+          {/*  name="account"*/}
+          {/*  size={30}*/}
+          {/*  style={style.icon}*/}
+          {/*/>*/}
+          {/*<Button icon={require('../assets/')}>Press me</Button>*/}
+          <TextInput
+            style={style.textInput}
+            placeholder="邮箱"
+            placeholderTextColor={isThemeDark ? '#fcfcfc' : '#181818'}
+            clearButtonMode="always"
+            selectionColor="skyblue"
+            maxLength={19}
+            onChangeText={_userName => {
+              setUserName(_userName);
+              setUserNameValidation(
+                _userName.includes('@') && _userName.includes('.'),
+              );
+              // dispatch({type: 'userName', userName: userName});
+            }}
+            left={<TextInput.Icon icon="email" />}
+          />
+          <HelperText
+            type="error"
+            style={{
+              display: !(userNameIsValid || !userName.length) ? 'flex' : 'none',
+            }}>
+            邮箱格式不正确
+          </HelperText>
+
+          <TextInput
+            style={style.textInput}
+            placeholder="密码"
+            placeholderTextColor={isThemeDark ? '#fcfcfc' : '#181818'}
+            secureTextEntry={true}
+            clearButtonMode="always"
+            selectionColor="skyblue"
+            maxLength={19}
+            onChangeText={_password => {
+              setPassword(_password);
+              setPasswordValidation(_password.length >= 6);
+              // dispatch({type: 'password', password: password});
+            }}
+            left={<TextInput.Icon icon="lock" />}
+          />
+
+          {/*<Text*/}
+          {/*  style={{*/}
+          {/*    alignContent: 'flex-start',*/}
+          {/*    color: 'red',*/}
+          {/*    marginBottom: 10,*/}
+          {/*    display:*/}
+          {/*      (userNameIsValid && passwordIsValid) ||*/}
+          {/*      !(userName.length * password.length)*/}
+          {/*        ? 'none'*/}
+          {/*        : 'flex',*/}
+          {/*  }}>*/}
+          {/*  用户名和密码需至少6个字符*/}
+          {/*</Text>*/}
+
+          <HelperText
+            type="error"
+            style={{
+              display: !(
+                (userNameIsValid && passwordIsValid) ||
+                !(userName.length * password.length)
+              )
+                ? 'flex'
+                : 'none',
+            }}>
+            密码需至少6个字符
+          </HelperText>
+
+          <Text style={{alignContent: 'flex-start', paddingTop: 20}}>
+            没有账号？
+            <Text
+              style={{color: 'blue', textDecorationLine: 'underline'}}
+              onPress={() => {
+                navigation.navigate('Signup');
+              }}>
+              立即注册
+            </Text>
           </Text>
-          <View>
-            {/*<MaterialCommunityIcons*/}
-            {/*  name="account"*/}
-            {/*  size={30}*/}
-            {/*  style={style.icon}*/}
-            {/*/>*/}
-            {/*<Button icon={require('../assets/')}>Press me</Button>*/}
-            <TextInput
-              style={style.textInput}
-              placeholder="邮箱"
-              clearButtonMode="always"
-              selectionColor="skyblue"
-              maxLength={19}
-              onChangeText={_userName => {
-                setUserName(_userName);
-                setUserNameValidation(
-                  _userName.includes('@') && _userName.includes('.'),
-                );
-                // dispatch({type: 'userName', userName: userName});
-              }}
-              left={<TextInput.Icon icon="email" />}
-            />
-            <HelperText
-              type="error"
-              style={{
-                display: !(userNameIsValid || !userName.length)
-                  ? 'flex'
-                  : 'none',
-              }}>
-              邮箱格式不正确
-            </HelperText>
-
-            <TextInput
-              style={style.textInput}
-              placeholder="密码"
-              secureTextEntry={true}
-              clearButtonMode="always"
-              selectionColor="skyblue"
-              maxLength={19}
-              onChangeText={_password => {
-                setPassword(_password);
-                setPasswordValidation(_password.length >= 6);
-                // dispatch({type: 'password', password: password});
-              }}
-              left={<TextInput.Icon icon="lock" />}
-            />
-
-            {/*<Text*/}
-            {/*  style={{*/}
-            {/*    alignContent: 'flex-start',*/}
-            {/*    color: 'red',*/}
-            {/*    marginBottom: 10,*/}
-            {/*    display:*/}
-            {/*      (userNameIsValid && passwordIsValid) ||*/}
-            {/*      !(userName.length * password.length)*/}
-            {/*        ? 'none'*/}
-            {/*        : 'flex',*/}
-            {/*  }}>*/}
-            {/*  用户名和密码需至少6个字符*/}
-            {/*</Text>*/}
-
-            <HelperText
-              type="error"
-              style={{
-                display: !(
-                  (userNameIsValid && passwordIsValid) ||
-                  !(userName.length * password.length)
-                )
-                  ? 'flex'
-                  : 'none',
-              }}>
-              密码需至少6个字符
-            </HelperText>
-
-            <Text style={{alignContent: 'flex-start', paddingTop: 20}}>
-              没有账号？
-              <Text
-                style={{color: 'blue', textDecorationLine: 'underline'}}
-                onPress={() => {
-                  navigation.navigate('Signup');
-                }}>
-                立即注册
-              </Text>
-            </Text>
-          </View>
-
-          <TouchableHighlight
-            onPress={() => sendAjax()}
-            disabled={!(userNameIsValid && passwordIsValid)}
-            style={
-              userNameIsValid && passwordIsValid
-                ? [styles.button, {backgroundColor: 'blue'}]
-                : styles.disabledButton
-            }>
-            <Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>
-              登录
-            </Text>
-          </TouchableHighlight>
         </View>
+
+        <TouchableHighlight
+          onPress={() => sendAjax()}
+          disabled={!(userNameIsValid && passwordIsValid)}
+          style={
+            userNameIsValid && passwordIsValid
+              ? [styles.button, {backgroundColor: 'blue'}]
+              : styles.disabledButton
+          }>
+          <Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>
+            登录
+          </Text>
+        </TouchableHighlight>
+        <Button
+          onPress={() => {
+            navigation.navigate('Main');
+          }}>
+          管理员入口
+        </Button>
       </View>
-    </PaperProvider>
+    </View>
   );
 }

@@ -1,127 +1,278 @@
+import * as React from 'react';
 import {
-  FlatList,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
   View,
-  Alert,
   Image,
+  Dimensions,
+  StyleSheet,
+  Platform,
+  Easing,
+  ScrollView,
+  RefreshControl,
 } from 'react-native';
-import React, {useState} from 'react';
+import {
+  Appbar,
+  BottomNavigation,
+  Menu,
+  Switch,
+  useTheme,
+} from 'react-native-paper';
+import ScreenWrapper from '../@components/ScreenWrapper';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import type {StackNavigationProp} from '@react-navigation/stack';
 import {StatusBarComp} from '../@components/StatusBarComp';
-import {TextInput} from 'react-native-gesture-handler';
-import {Button} from 'react-native-paper';
+import {PreferencesContext} from '../context/preference';
 import {serverIPP} from '../values/strings';
 
-// var date = new Date();
+type RoutesState = Array<{
+  key: string;
+  title: string;
+  focusedIcon: string;
+  unfocusedIcon?: string;
+  color?: string;
+  badge?: boolean;
+  getAccessibilityLabel?: string;
+  getTestID?: string;
+}>;
 
-// var year = date.getFullYear().toString();
-// var month = (date.getMonth()+1).toString();
-// var day = date.getDate().toString();
-// var hour =  date.getHours().toString();
+type Route = {route: {key: string}};
 
-// import styles from '../styles';
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    padding: 10,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  inputWrap: {
-    // overflow:'visible',
-    flexDirection: 'row',
-    alignItems: 'center',
-    // width: 245,
-    // height: 50,
-    backgroundColor: 'transparent',
-    // borderColor: 'rgba(171, 190, 215, 0.56)',
-    // borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  icon: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-  },
-  textInput: {
-    marginHorizontal: 20,
-    backgroundColor: 'transparent',
-    borderColor: 'transparent',
-    borderWidth: 1,
+type Props = {
+  navigation: StackNavigationProp<{}>;
+};
 
-    // width: 200,
+const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
-    // height: 500,
-    fontSize: 14,
-  },
-});
+const PhotoGallery = ({route}: Route) => {
+  const PHOTOS = Array.from({length: 24}).map(
+    (_, i) => `https://unsplash.it/300/300/?random&__id=${route.key}${i}`,
+  );
+  //
 
-export default function MainScreen({route, navigation}) {
-  const [nftImgs, setnftImgs] = React.useState([]);
+  // console.log(PHOTOS);
+
   return (
-    <View
-      style={[
-        styles.container,
-        // useColorScheme() === 'dark'
-        //   ? styles.darkBackgroundColor
-        //   : styles.lightBackgroundColor,
-      ]}>
-      <SafeAreaView style={styles.container}>
-        <Text>开发中</Text>
-        <Button
-          onPress={() => {
-            fetch('http:/' + serverIPP + '/nftimg', {
-              method: 'GET',
-            })
-              .then(res => {
-                if (res.ok) {
-                  res.json().then(resData => {
-                    console.log(resData);
-                    setnftImgs(resData);
-                  });
-                } else {
-                  console.error('res error!');
-                }
-              })
-              .catch(e => {
-                console.log(e.message);
-              });
-          }}>
-          Test
-        </Button>
+    <ScreenWrapper contentContainerStyle={styles.content}>
+      {PHOTOS.map(uri => (
+        <View key={uri} style={styles.item}>
+          <Image source={{uri}} style={styles.photo} />
+        </View>
+      ))}
+    </ScreenWrapper>
+  );
+};
 
-        {/*{nftImgs ? (*/}
-        {/*  <View>*/}
-        {/*    <Image*/}
-        {/*      source={{uri: nftImgs[0]?.url}}*/}
-        {/*      style={{width: 100, height: 100}}*/}
-        {/*    />*/}
-        {/*  </View>*/}
-        {/*) : undefined}*/}
+const NftGallery = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getNftImgs();
+  }, []);
 
-        {nftImgs?.map(nftImg => {
-          // console.log(nftImg);
+  const [nftImgs, setnftImgs] = React.useState([]);
+  const getNftImgs = () => {
+    fetch('http:/' + serverIPP + '/nftimg', {
+      method: 'GET',
+    })
+      .then(res => {
+        if (res.ok) {
+          res.json().then(resData => {
+            // console.log(resData);
+            setnftImgs(resData);
+            setTimeout(() => {
+              setRefreshing(false);
+            }, 1000);
+          });
+        } else {
+          console.error('res error when getting nftImgs!');
+        }
+      })
+      .catch(e => {
+        console.log(e.message);
+      });
+  };
+  React.useState(onRefresh);
+
+  // console.log(nftImgs);
+
+  return (
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
+      <ScreenWrapper contentContainerStyle={styles.content}>
+        {nftImgs?.map((nftImg, index) => {
+          // console.log(uri.url);
           return (
-            //TODO:
-            // Error Log: Each child in a list should have a unique "key: prop.
-            <Image
-              source={{uri: nftImg?.url}}
-              style={{width: 100, height: 100}}
-            />
+            <View key={nftImg?.id} style={styles.item}>
+              <Image source={{uri: nftImg?.url}} style={styles.photo} />
+            </View>
           );
         })}
-      </SafeAreaView>
-      <StatusBarComp />
+      </ScreenWrapper>
+    </ScrollView>
+  );
+};
+
+const MainScreen = ({navigation}: Props) => {
+  const theme = useTheme();
+  const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+
+  const {isV3} = useTheme();
+  const insets = useSafeAreaInsets();
+  const [index, setIndex] = React.useState(0);
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [sceneAnimation, setSceneAnimation] =
+    React.useState<
+      React.ComponentProps<typeof BottomNavigation>['sceneAnimationType']
+    >();
+
+  const [routes] = React.useState<RoutesState>([
+    {
+      key: 'album',
+      title: 'Album',
+      focusedIcon: 'image-album',
+      ...(!isV3 && {color: '#2962ff'}),
+    },
+    {
+      key: 'library',
+      title: 'Library',
+      focusedIcon: 'inbox',
+      badge: true,
+      ...(isV3
+        ? {unfocusedIcon: 'inbox-outline'}
+        : {
+            color: '#6200ee',
+          }),
+    },
+    {
+      key: 'favorites',
+      title: 'Favorites',
+      focusedIcon: 'heart',
+      ...(isV3
+        ? {unfocusedIcon: 'heart-outline'}
+        : {
+            color: '#00796b',
+          }),
+    },
+    {
+      key: 'purchased',
+      title: 'Purchased',
+      focusedIcon: 'shopping',
+      ...(isV3 ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
+    },
+  ]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
+  return (
+    <View style={styles.screen}>
+      <StatusBarComp isDarkStyle={isThemeDark} />
+      <Appbar.Header elevated theme={theme}>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="BlaCash" titleStyle={{paddingLeft: 80}} />
+        <Menu
+          visible={menuVisible}
+          onDismiss={() => setMenuVisible(false)}
+          anchor={
+            <Appbar.Action
+              icon={MORE_ICON}
+              onPress={() => setMenuVisible(true)}
+              {...(!isV3 && {color: 'white'})}
+            />
+          }>
+          <Menu.Item
+            trailingIcon={sceneAnimation === undefined ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation(undefined);
+              setMenuVisible(false);
+            }}
+            title="Scene animation: none"
+          />
+          <Menu.Item
+            trailingIcon={sceneAnimation === 'shifting' ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation('shifting');
+              setMenuVisible(false);
+            }}
+            title="Scene animation: shifting"
+          />
+          <Menu.Item
+            trailingIcon={sceneAnimation === 'opacity' ? 'check' : undefined}
+            onPress={() => {
+              setSceneAnimation('opacity');
+              setMenuVisible(false);
+            }}
+            title="Scene animation: opacity"
+          />
+        </Menu>
+        <Switch
+          color={'black'}
+          value={isThemeDark}
+          onValueChange={toggleTheme}
+        />
+      </Appbar.Header>
+      <BottomNavigation
+        safeAreaInsets={{bottom: insets.bottom}}
+        navigationState={{index, routes}}
+        onIndexChange={setIndex}
+        labelMaxFontSizeMultiplier={2}
+        renderScene={BottomNavigation.SceneMap({
+          album: NftGallery,
+          library: PhotoGallery,
+          favorites: PhotoGallery,
+          purchased: PhotoGallery,
+        })}
+        sceneAnimationEnabled={sceneAnimation !== undefined}
+        sceneAnimationType={sceneAnimation}
+        sceneAnimationEasing={Easing.ease}
+        // theme={theme}
+      />
     </View>
   );
-}
+};
+
+MainScreen.title = 'Bottom Navigation';
+
+export default MainScreen;
+
+const styles = StyleSheet.create({
+  ...Platform.select({
+    web: {
+      content: {
+        // there is no 'grid' type in RN :(
+        display: 'grid' as 'none',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+        gridRowGap: '8px',
+        gridColumnGap: '8px',
+        padding: 8,
+      },
+      item: {
+        width: '100%',
+        height: 150,
+      },
+    },
+    default: {
+      content: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        padding: 4,
+      },
+      item: {
+        height: Dimensions.get('window').width / 2,
+        width: '50%',
+        padding: 4,
+      },
+    },
+  }),
+  photo: {
+    flex: 1,
+    resizeMode: 'cover',
+  },
+  screen: {
+    flex: 1,
+  },
+});
