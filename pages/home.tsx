@@ -18,14 +18,16 @@ import styles from '../styles';
 import {SvgUri} from 'react-native-svg';
 
 import {Provider as PaperProvider} from 'react-native-paper';
+import {serverIPP} from '../values/strings';
 
 export default function HomeScreen({navigation}) {
   const currentVersion = 'demo_1.2';
   let checkUpdate = () => {
-    fetch('http://43.143.213.226:8088/checkUpdate', {
+    // 43.143.213.226:8088
+    fetch('http://' + serverIPP + '/checkUpdate', {
       //不能直接使用 wmzspace.space域名, 因为 域名开启了https防窜站
       method: 'POST',
-      mode: 'cros',
+      mode: 'cors',
       body: `version=${currentVersion}`, // 上传到后端的数据
       headers: {
         Accept: 'application/json',

@@ -15,6 +15,7 @@ import styles from '../styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RadioGroup from 'react-native-radio-buttons-group';
 import Geolocation from 'react-native-geolocation-service';
+import {serverIPP} from '../values/strings';
 
 const radioButtonsData = [
   {
@@ -238,7 +239,7 @@ export default function SignupScreen({navigation}) {
   };
 
   const sendAjax = () => {
-    fetch('http://43.143.213.226:8088/signup', {
+    fetch('http://' + serverIPP + '/signup', {
       //不能直接使用 wmzspace.space域名, 因为 域名开启了https防窜站
       method: 'POST',
       mode: 'cors', //之前是no-cors

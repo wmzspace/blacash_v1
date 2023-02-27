@@ -21,6 +21,7 @@ import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {theme} from '../ui/themes';
+import {serverIPP} from '../values/strings';
 
 const style = StyleSheet.create({
   inputWrap: {
@@ -56,7 +57,7 @@ export default function LoginScreen({navigation}) {
   const [passwordIsValid, setPasswordValidation] = React.useState(false);
 
   const sendAjax = () => {
-    fetch('http://43.143.213.226:8088/login', {
+    fetch('http://' + serverIPP + '/login', {
       method: 'POST',
       mode: 'cors',
       //same-origin - 同源请求，跨域会报error
