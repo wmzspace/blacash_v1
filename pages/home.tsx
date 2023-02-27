@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  Text,
   Alert,
   ImageBackground,
   useColorScheme,
@@ -10,11 +9,15 @@ import {
   View,
   Image,
 } from 'react-native';
+import {Text} from 'react-native-paper';
+
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import * as Animatable from 'react-native-animatable';
 import styles from '../styles';
 import {SvgUri} from 'react-native-svg';
+
+import {Provider as PaperProvider} from 'react-native-paper';
 
 export default function HomeScreen({navigation}) {
   const currentVersion = 'demo_1.2';
@@ -86,64 +89,65 @@ export default function HomeScreen({navigation}) {
   checkUpdate();
 
   return (
-    <View style={[styles.container, {backgroundColor: 'white'}]}>
-      <StatusBarComp isDarkStyle="true" />
-
-      <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
-        {/*<Text*/}
-        {/*  style={{*/}
-        {/*    color: '#fcfcfc',*/}
-        {/*    textAlign: 'center',*/}
-        {/*    marginTop: 100,*/}
-        {/*    fontSize: 45,*/}
-        {/*    flex: 1,*/}
-        {/*    fontFamily: '',*/}
-        {/*  }}>*/}
-        {/*  BlaCash*/}
-        {/*</Text>*/}
-        <Image
-          style={{
-            flex: 1,
-            alignSelf: 'center',
-            resizeMode: 'contain',
-            width: 600,
-          }}
-          source={require('../images/logo_transparent.png')}
-        />
-        <Animatable.View
-          style={[styles.inlineFlex, {justifyContent: 'space-between'}]}
-          animation="fadeInUp"
-          delay={2000}
-          duration={1000}>
-          <TouchableOpacity
-            onPress={() => {
-              checkUpdate();
-              navigation.navigate('Login');
+    <PaperProvider>
+      <View style={[styles.container]}>
+        <StatusBarComp isDarkStyle="true" />
+        <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
+          {/*<Text*/}
+          {/*  style={{*/}
+          {/*    color: '#fcfcfc',*/}
+          {/*    textAlign: 'center',*/}
+          {/*    marginTop: 100,*/}
+          {/*    fontSize: 45,*/}
+          {/*    flex: 1,*/}
+          {/*    fontFamily: '',*/}
+          {/*  }}>*/}
+          {/*  BlaCash*/}
+          {/*</Text>*/}
+          <Image
+            style={{
+              flex: 1,
+              alignSelf: 'center',
+              resizeMode: 'contain',
+              width: 600,
             }}
-            style={[
-              styles.button2,
-              {
-                backgroundColor: '#06be5e',
-              },
-            ]}>
-            <Text style={{color: '#fcfcfc', fontSize: 16}}>登录</Text>
-          </TouchableOpacity>
+            source={require('../images/logo_transparent.png')}
+          />
+          <Animatable.View
+            style={[styles.inlineFlex, {justifyContent: 'space-between'}]}
+            animation="fadeInUp"
+            delay={2000}
+            duration={1000}>
+            <TouchableOpacity
+              onPress={() => {
+                checkUpdate();
+                navigation.navigate('Login');
+              }}
+              style={[
+                styles.button2,
+                {
+                  backgroundColor: '#06be5e',
+                },
+              ]}>
+              <Text style={{color: '#fcfcfc', fontSize: 16}}>登录</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => {
-              checkUpdate();
-              navigation.navigate('Signup');
-            }}
-            style={[
-              styles.button2,
-              useColorScheme() === 'dark'
-                ? styles.darkBackgroundColor
-                : styles.lightBackgroundColor,
-            ]}>
-            <Text style={{fontSize: 16}}>注册</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                checkUpdate();
+                navigation.navigate('Signup');
+              }}
+              style={[
+                styles.button2,
+                useColorScheme() === 'dark'
+                  ? styles.darkBackgroundColor
+                  : styles.lightBackgroundColor,
+              ]}>
+              <Text style={{fontSize: 16}}>注册</Text>
+            </TouchableOpacity>
+          </Animatable.View>
         </Animatable.View>
-      </Animatable.View>
-    </View>
+      </View>
+    </PaperProvider>
   );
 }

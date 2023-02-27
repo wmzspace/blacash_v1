@@ -68,9 +68,9 @@ export default function MainScreen({route, navigation}) {
     <View
       style={[
         styles.container,
-        useColorScheme() === 'dark'
-          ? styles.darkBackgroundColor
-          : styles.lightBackgroundColor,
+        // useColorScheme() === 'dark'
+        //   ? styles.darkBackgroundColor
+        //   : styles.lightBackgroundColor,
       ]}>
       <SafeAreaView style={styles.container}>
         <Text>开发中</Text>

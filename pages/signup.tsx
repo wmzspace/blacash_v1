@@ -1,15 +1,15 @@
 import * as React from 'react';
 import {
   StyleSheet,
-  Text,
   View,
-  TextInput,
   TouchableHighlight,
-  useColorScheme,
   Alert,
   PermissionsAndroid,
   Platform,
 } from 'react-native';
+
+import {Text, TextInput, RadioButton, HelperText} from 'react-native-paper';
+
 import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -70,7 +70,7 @@ export default function SignupScreen({navigation}) {
   const [userNameIsValid, setUserNameValidation] = React.useState(false);
   const [passwordIsValid, setPasswordValidation] = React.useState(false);
   //TODO: email and address is valid
-  const [readNotice, setReadNotice] = React.useState(false);
+  const [readNotice, setReadNotice] = React.useState('');
   const userInfo = {userName: userName, password: password};
   const [radioButtons, setRadioButtons] = React.useState(radioButtonsData);
 
@@ -296,10 +296,9 @@ export default function SignupScreen({navigation}) {
     <View
       style={[
         styles.container,
-        styles.container,
-        useColorScheme() === 'dark'
-          ? styles.darkBackgroundColor
-          : styles.lightBackgroundColor,
+        // useColorScheme() === 'dark'
+        //   ? styles.darkBackgroundColor
+        //   : styles.lightBackgroundColor,
       ]}>
       <StatusBarComp />
       <View style={{alignItems: 'center'}}>
@@ -308,53 +307,67 @@ export default function SignupScreen({navigation}) {
           BlaCash 账号注册
         </Text>
         <View>
-          <View style={style.inputWrap}>
-            <MaterialCommunityIcons
-              name="account"
-              size={30}
-              style={style.icon}
-            />
-            <TextInput
-              style={style.textInput}
-              placeholder="用户名*"
-              clearButtonMode="always"
-              selectionColor="skyblue"
-              maxLength={19}
-              onChangeText={_userName => {
-                setUserName(_userName);
-                setUserNameValidation(_userName.length >= 6);
-                // dispatch({type: 'userName', userName: userName});
-              }}
-            />
-          </View>
-          <View style={style.inputWrap}>
-            <MaterialCommunityIcons name="lock" size={30} style={style.icon} />
-            <TextInput
-              style={style.textInput}
-              placeholder="密码*"
-              secureTextEntry={true}
-              clearButtonMode="always"
-              selectionColor="red"
-              maxLength={19}
-              onChangeText={_password => {
-                setPassword(_password);
-                setPasswordValidation(_password.length >= 6);
-                // dispatch({type: 'password', password: password});
-              }}
-            />
-          </View>
-          <View style={style.inputWrap}>
-            <Text>邮箱: </Text>
-            <TextInput
-              style={style.textInput}
-              placeholder="必填*"
-              clearButtonMode="always"
-              maxLength={30}
-              onChangeText={email_ => {
-                setEmail(email_);
-              }}
-            />
-          </View>
+          <TextInput
+            style={style.textInput}
+            placeholder="用户名*"
+            clearButtonMode="always"
+            selectionColor="skyblue"
+            maxLength={19}
+            onChangeText={_userName => {
+              setUserName(_userName);
+              setUserNameValidation(_userName.length >= 6);
+              // dispatch({type: 'userName', userName: userName});
+            }}
+            left={<TextInput.Icon icon="account" />}
+          />
+          <HelperText
+            type="error"
+            style={{display: userNameIsValid || !userName ? 'none' : 'flex'}}>
+            用户名需至少6个字符
+          </HelperText>
+
+          <TextInput
+            style={style.textInput}
+            placeholder="密码*"
+            secureTextEntry={true}
+            clearButtonMode="always"
+            selectionColor="red"
+            maxLength={19}
+            onChangeText={_password => {
+              setPassword(_password);
+              setPasswordValidation(_password.length >= 6);
+              // dispatch({type: 'password', password: password});
+            }}
+            left={<TextInput.Icon icon="lock" />}
+          />
+          <HelperText
+            type="error"
+            style={{display: passwordIsValid || !password ? 'none' : 'flex'}}>
+            密码需至少6个字符
+          </HelperText>
+
+          <TextInput
+            style={style.textInput}
+            placeholder="邮箱*"
+            clearButtonMode="always"
+            maxLength={30}
+            onChangeText={email_ => {
+              setEmail(email_);
+            }}
+            left={<TextInput.Icon icon="email" />}
+          />
+          <HelperText
+            type="error"
+            style={{
+              display:
+                email && !(email.includes('@') && email.includes('.'))
+                  ? 'flex'
+                  : 'none',
+            }}>
+            邮箱格式不正确
+          </HelperText>
+
+          {/*</View>*/}
           <View style={style.inputWrap}>
             <Text onPress={requestLocationPermission}>位置: </Text>
             <TextInput
@@ -368,6 +381,7 @@ export default function SignupScreen({navigation}) {
               }}
             />
           </View>
+
           <View style={style.inputWrap}>
             <Text>钱包地址: </Text>
             <TextInput
@@ -383,27 +397,46 @@ export default function SignupScreen({navigation}) {
           </View>
           {/* TODO: 阅读声明的超链接*/}
           <View style={style.inputWrap}>
-            <Text>已阅读声明: </Text>
-            <RadioGroup
-              radioButtons={radioButtons}
-              onPress={onPressRadioButton}
-              containerStyle={{width: 40}}
-              layout="row"
-            />
+            <Text>
+              <Text style={{color: 'blue'}}>阅读声明</Text>
+              并接受:{' '}
+            </Text>
+            {/*<RadioGroup*/}
+            {/*  radioButtons={radioButtons}*/}
+            {/*  onPress={onPressRadioButton}*/}
+            {/*  containerStyle={{width: 40}}*/}
+            {/*  layout="row"*/}
+            {/*/>*/}
+            <RadioButton.Group
+              onValueChange={newValue => {
+                setReadNotice(newValue);
+              }}
+              value={readNotice}>
+              <View style={[styles.inlineFlex]}>
+                <View style={[styles.inlineFlex]}>
+                  <Text style={{paddingTop: 7}}>是</Text>
+                  <RadioButton value="yes" />
+                </View>
+                <View style={styles.inlineFlex}>
+                  <Text style={{paddingTop: 7}}>否</Text>
+                  <RadioButton value="no" />
+                </View>
+              </View>
+            </RadioButton.Group>
           </View>
-          <Text
-            style={{
-              alignContent: 'flex-start',
-              color: 'red',
-              marginBottom: 10,
-              display:
-                (userNameIsValid && passwordIsValid) ||
-                !(userName.length * password.length)
-                  ? 'none'
-                  : 'flex',
-            }}>
-            用户名和密码需至少6个字符
-          </Text>
+          {/*<Text*/}
+          {/*  style={{*/}
+          {/*    alignContent: 'flex-start',*/}
+          {/*    color: 'red',*/}
+          {/*    marginBottom: 10,*/}
+          {/*    display:*/}
+          {/*      (userNameIsValid && passwordIsValid) ||*/}
+          {/*      !(userName.length * password.length)*/}
+          {/*        ? 'none'*/}
+          {/*        : 'flex',*/}
+          {/*  }}>*/}
+          {/*  用户名和密码需至少6个字符*/}
+          {/*</Text>*/}
           <Text style={{alignContent: 'flex-start'}}>
             已有账号？
             <Text
@@ -419,9 +452,22 @@ export default function SignupScreen({navigation}) {
         <TouchableHighlight
           // onPress={() => navigation.navigate('Home')}
           onPress={sendAjax}
-          disabled={!(userNameIsValid && passwordIsValid)}
+          disabled={
+            !(
+              userNameIsValid &&
+              passwordIsValid &&
+              address &&
+              email &&
+              readNotice
+            )
+          }
           style={
-            userNameIsValid && passwordIsValid
+            userNameIsValid &&
+            passwordIsValid &&
+            address &&
+            email.includes('@') &&
+            email.includes('.') &&
+            readNotice === 'yes'
               ? [styles.button, {backgroundColor: 'blue'}]
               : styles.disabledButton
           }>

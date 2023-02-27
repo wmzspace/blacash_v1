@@ -1,17 +1,27 @@
 import * as React from 'react';
 import {
   StyleSheet,
-  Text,
   View,
-  TextInput,
   TouchableHighlight,
   useColorScheme,
   ToastAndroid,
   Alert,
 } from 'react-native';
+
+import {
+  configureFonts,
+  MD2LightTheme,
+  Text,
+  TextInput,
+  Provider as PaperProvider,
+  HelperText,
+} from 'react-native-paper';
+
 import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {theme} from '../ui/themes';
+
 const style = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row',
@@ -29,10 +39,11 @@ const style = StyleSheet.create({
     marginRight: 10,
   },
   textInput: {
-    backgroundColor: 'transparent',
+    // backgroundColor: 'transparent',
     borderColor: 'transparent',
     borderWidth: 1,
-    width: 200,
+    marginVertical: 8,
+    width: 250,
     height: 50,
     fontSize: 14,
   },
@@ -110,31 +121,26 @@ export default function LoginScreen({navigation}) {
         Alert.alert('请求失败', err, [
           {text: '确定', onPress: () => console.log('OK Pressed!')},
         ]);
-        reject(err);
+        // reject(err);
       });
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        useColorScheme() === 'dark'
-          ? styles.darkBackgroundColor
-          : styles.lightBackgroundColor,
-      ]}>
-      <StatusBarComp />
-      <View style={{alignItems: 'center'}}>
-        {/* <View style={{alignItems: 'center'}}> */}
-        <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
-          BlaCash 登录
-        </Text>
-        <View>
-          <View style={style.inputWrap}>
-            <MaterialCommunityIcons
-              name="account"
-              size={30}
-              style={style.icon}
-            />
+    <PaperProvider theme={theme}>
+      <View style={[styles.container]}>
+        <StatusBarComp />
+        <View style={{alignItems: 'center'}}>
+          {/* <View style={{alignItems: 'center'}}> */}
+          <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
+            BlaCash 登录
+          </Text>
+          <View>
+            {/*<MaterialCommunityIcons*/}
+            {/*  name="account"*/}
+            {/*  size={30}*/}
+            {/*  style={style.icon}*/}
+            {/*/>*/}
+            {/*<Button icon={require('../assets/')}>Press me</Button>*/}
             <TextInput
               style={style.textInput}
               placeholder="邮箱"
@@ -143,14 +149,23 @@ export default function LoginScreen({navigation}) {
               maxLength={19}
               onChangeText={_userName => {
                 setUserName(_userName);
-                setUserNameValidation(_userName.length >= 6);
+                setUserNameValidation(
+                  _userName.includes('@') && _userName.includes('.'),
+                );
                 // dispatch({type: 'userName', userName: userName});
               }}
+              left={<TextInput.Icon icon="email" />}
             />
-          </View>
+            <HelperText
+              type="error"
+              style={{
+                display: !(userNameIsValid || !userName.length)
+                  ? 'flex'
+                  : 'none',
+              }}>
+              邮箱格式不正确
+            </HelperText>
 
-          <View style={style.inputWrap}>
-            <MaterialCommunityIcons name="lock" size={30} style={style.icon} />
             <TextInput
               style={style.textInput}
               placeholder="密码"
@@ -163,46 +178,62 @@ export default function LoginScreen({navigation}) {
                 setPasswordValidation(_password.length >= 6);
                 // dispatch({type: 'password', password: password});
               }}
+              left={<TextInput.Icon icon="lock" />}
             />
-          </View>
-          <Text
-            style={{
-              alignContent: 'flex-start',
-              color: 'red',
-              marginBottom: 10,
-              display:
-                (userNameIsValid && passwordIsValid) ||
-                !(userName.length * password.length)
-                  ? 'none'
-                  : 'flex',
-            }}>
-            用户名和密码需至少6个字符
-          </Text>
-          <Text style={{alignContent: 'flex-start'}}>
-            没有账号？
-            <Text
-              style={{color: 'blue', textDecorationLine: 'underline'}}
-              onPress={() => {
-                navigation.navigate('Signup');
-              }}>
-              立即注册
-            </Text>
-          </Text>
-        </View>
 
-        <TouchableHighlight
-          onPress={() => sendAjax()}
-          disabled={!(userNameIsValid && passwordIsValid)}
-          style={
-            userNameIsValid && passwordIsValid
-              ? [styles.button, {backgroundColor: 'blue'}]
-              : styles.disabledButton
-          }>
-          <Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>
-            登录
-          </Text>
-        </TouchableHighlight>
+            {/*<Text*/}
+            {/*  style={{*/}
+            {/*    alignContent: 'flex-start',*/}
+            {/*    color: 'red',*/}
+            {/*    marginBottom: 10,*/}
+            {/*    display:*/}
+            {/*      (userNameIsValid && passwordIsValid) ||*/}
+            {/*      !(userName.length * password.length)*/}
+            {/*        ? 'none'*/}
+            {/*        : 'flex',*/}
+            {/*  }}>*/}
+            {/*  用户名和密码需至少6个字符*/}
+            {/*</Text>*/}
+
+            <HelperText
+              type="error"
+              style={{
+                display: !(
+                  (userNameIsValid && passwordIsValid) ||
+                  !(userName.length * password.length)
+                )
+                  ? 'flex'
+                  : 'none',
+              }}>
+              密码需至少6个字符
+            </HelperText>
+
+            <Text style={{alignContent: 'flex-start', paddingTop: 20}}>
+              没有账号？
+              <Text
+                style={{color: 'blue', textDecorationLine: 'underline'}}
+                onPress={() => {
+                  navigation.navigate('Signup');
+                }}>
+                立即注册
+              </Text>
+            </Text>
+          </View>
+
+          <TouchableHighlight
+            onPress={() => sendAjax()}
+            disabled={!(userNameIsValid && passwordIsValid)}
+            style={
+              userNameIsValid && passwordIsValid
+                ? [styles.button, {backgroundColor: 'blue'}]
+                : styles.disabledButton
+            }>
+            <Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>
+              登录
+            </Text>
+          </TouchableHighlight>
+        </View>
       </View>
-    </View>
+    </PaperProvider>
   );
 }

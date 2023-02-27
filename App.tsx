@@ -11,10 +11,11 @@ import MainScreen from './pages/main';
 const Stack = createStackNavigator();
 
 import {Provider as PaperProvider} from 'react-native-paper';
+import {theme} from './ui/themes';
 
 export default function App() {
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
@@ -62,7 +63,7 @@ export default function App() {
             options={{
               // headerShown: false,
 
-              title: 'Yechat',
+              title: 'Blacash',
               headerTitleAlign: 'center',
               headerStyle: [
                 useColorScheme() === 'dark'
