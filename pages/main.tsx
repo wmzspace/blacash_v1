@@ -13,15 +13,21 @@ import {
   Appbar,
   BottomNavigation,
   Menu,
+  Searchbar,
   Switch,
   useTheme,
 } from 'react-native-paper';
-import ScreenWrapper from '../@components/ScreenWrapper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import type {StackNavigationProp} from '@react-navigation/stack';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import {PreferencesContext} from '../context/preference';
 import {serverIPP} from '../values/strings';
+import {NftGallery} from './nftGallery';
+
+import ScreenWrapper from '../@components/ScreenWrapper';
+import type {StackNavigationProp} from '@react-navigation/stack';
+// import {PhotoGallery} from './photoGallery';
+import {main_styles} from '../ui/main_styles';
+type Route = {route: {key: string}};
 
 type RoutesState = Array<{
   key: string;
@@ -34,90 +40,31 @@ type RoutesState = Array<{
   getTestID?: string;
 }>;
 
-type Route = {route: {key: string}};
-
 type Props = {
   navigation: StackNavigationProp<{}>;
 };
 
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
-
-const PhotoGallery = ({route}: Route) => {
+export const PhotoGallery = ({route}: Route) => {
   const PHOTOS = Array.from({length: 24}).map(
     (_, i) => `https://unsplash.it/300/300/?random&__id=${route.key}${i}`,
   );
-  //
-
-  // console.log(PHOTOS);
 
   return (
-    <ScreenWrapper contentContainerStyle={styles.content}>
+    <ScreenWrapper contentContainerStyle={main_styles.content}>
       {PHOTOS.map(uri => (
-        <View key={uri} style={styles.item}>
-          <Image source={{uri}} style={styles.photo} />
+        <View key={uri} style={main_styles.item}>
+          <Image source={{uri}} style={main_styles.photo} />
         </View>
       ))}
     </ScreenWrapper>
   );
 };
 
-const NftGallery = () => {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    getNftImgs();
-  }, []);
-
-  const [nftImgs, setnftImgs] = React.useState([]);
-  const getNftImgs = () => {
-    fetch('http:/' + serverIPP + '/nftimg', {
-      method: 'GET',
-    })
-      .then(res => {
-        if (res.ok) {
-          res.json().then(resData => {
-            // console.log(resData);
-            setnftImgs(resData);
-            setTimeout(() => {
-              setRefreshing(false);
-            }, 1000);
-          });
-        } else {
-          console.error('res error when getting nftImgs!');
-        }
-      })
-      .catch(e => {
-        console.log(e.message);
-      });
-  };
-  React.useState(onRefresh);
-
-  // console.log(nftImgs);
-
-  return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      <ScreenWrapper contentContainerStyle={styles.content}>
-        {nftImgs?.map((nftImg, index) => {
-          // console.log(uri.url);
-          return (
-            <View key={nftImg?.id} style={styles.item}>
-              <Image source={{uri: nftImg?.url}} style={styles.photo} />
-            </View>
-          );
-        })}
-      </ScreenWrapper>
-    </ScrollView>
-  );
-};
-
 const MainScreen = ({navigation}: Props) => {
   const theme = useTheme();
   const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+  // const {isV3} = useTheme();
 
-  const {isV3} = useTheme();
   const insets = useSafeAreaInsets();
   const [index, setIndex] = React.useState(0);
   const [menuVisible, setMenuVisible] = React.useState(false);
@@ -131,14 +78,14 @@ const MainScreen = ({navigation}: Props) => {
       key: 'album',
       title: 'Album',
       focusedIcon: 'image-album',
-      ...(!isV3 && {color: '#2962ff'}),
+      ...(!theme && {color: '#2962ff'}),
     },
     {
       key: 'library',
       title: 'Library',
       focusedIcon: 'inbox',
       badge: true,
-      ...(isV3
+      ...(!theme
         ? {unfocusedIcon: 'inbox-outline'}
         : {
             color: '#6200ee',
@@ -148,7 +95,7 @@ const MainScreen = ({navigation}: Props) => {
       key: 'favorites',
       title: 'Favorites',
       focusedIcon: 'heart',
-      ...(isV3
+      ...(!theme
         ? {unfocusedIcon: 'heart-outline'}
         : {
             color: '#00796b',
@@ -158,9 +105,11 @@ const MainScreen = ({navigation}: Props) => {
       key: 'purchased',
       title: 'Purchased',
       focusedIcon: 'shopping',
-      ...(isV3 ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
+      ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
     },
   ]);
+
+  const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -168,10 +117,11 @@ const MainScreen = ({navigation}: Props) => {
     });
   }, [navigation]);
 
+  //TODO: Main Page
   return (
-    <View style={styles.screen}>
+    <View style={main_styles.screen}>
       <StatusBarComp isDarkStyle={isThemeDark} />
-      <Appbar.Header elevated theme={theme}>
+      <Appbar.Header elevated>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title="BlaCash" titleStyle={{paddingLeft: 80}} />
         <Menu
@@ -181,7 +131,7 @@ const MainScreen = ({navigation}: Props) => {
             <Appbar.Action
               icon={MORE_ICON}
               onPress={() => setMenuVisible(true)}
-              {...(!isV3 && {color: 'white'})}
+              {...(theme && {color: 'white'})}
             />
           }>
           <Menu.Item
@@ -191,6 +141,7 @@ const MainScreen = ({navigation}: Props) => {
               setMenuVisible(false);
             }}
             title="Scene animation: none"
+            // theme={toggleTheme()}
           />
           <Menu.Item
             trailingIcon={sceneAnimation === 'shifting' ? 'check' : undefined}
@@ -238,41 +189,3 @@ const MainScreen = ({navigation}: Props) => {
 MainScreen.title = 'Bottom Navigation';
 
 export default MainScreen;
-
-const styles = StyleSheet.create({
-  ...Platform.select({
-    web: {
-      content: {
-        // there is no 'grid' type in RN :(
-        display: 'grid' as 'none',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-        gridRowGap: '8px',
-        gridColumnGap: '8px',
-        padding: 8,
-      },
-      item: {
-        width: '100%',
-        height: 150,
-      },
-    },
-    default: {
-      content: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        padding: 4,
-      },
-      item: {
-        height: Dimensions.get('window').width / 2,
-        width: '50%',
-        padding: 4,
-      },
-    },
-  }),
-  photo: {
-    flex: 1,
-    resizeMode: 'cover',
-  },
-  screen: {
-    flex: 1,
-  },
-});
