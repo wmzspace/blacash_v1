@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {serverIPP} from '../values/strings';
 import {
+  Alert,
   Dimensions,
   Image,
   Platform,
@@ -57,6 +58,9 @@ export const NftGallery = () => {
         placeholder="Search"
         onChangeText={onChangeSearch}
         value={searchQuery}
+        onSubmitEditing={() => {
+          Alert.alert('搜索功能暂未启用');
+        }}
         // theme={theme}
       />
       <ScreenWrapper contentContainerStyle={styles.content}>

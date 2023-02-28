@@ -14,6 +14,8 @@ import {
   RadioButton,
   HelperText,
   useTheme,
+  Portal,
+  Modal,
 } from 'react-native-paper';
 
 import {StatusBarComp} from '../@components/StatusBarComp';
@@ -300,6 +302,12 @@ export default function SignupScreen({navigation}) {
 
   const theme = useTheme();
   const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+
+  const [NoticeVisible, setNoticeVisible] = React.useState(false);
+
+  const showNotice = () => setNoticeVisible(true);
+  const hideNotice = () => setNoticeVisible(false);
+  const containerStyle = {backgroundColor: 'white', padding: 20};
   return (
     <View
       style={[
@@ -309,6 +317,18 @@ export default function SignupScreen({navigation}) {
         //   : styles.lightBackgroundColor,
       ]}>
       <StatusBarComp />
+      <Portal>
+        <Modal
+          // theme={theme}
+          visible={NoticeVisible}
+          onDismiss={hideNotice}
+          contentContainerStyle={containerStyle}>
+          <Text style={{color: '#181818'}}>{`
+声明：
+请接受本声明！
+`}</Text>
+        </Modal>
+      </Portal>
       <View style={{alignItems: 'center'}}>
         {/* <View style={{alignItems: 'center'}}> */}
         <Text style={{marginTop: 60, marginBottom: 20, fontSize: 20}}>
@@ -415,7 +435,9 @@ export default function SignupScreen({navigation}) {
           {/* TODO: 阅读声明的超链接*/}
           <View style={style.inputWrap}>
             <Text>
-              <Text style={{color: 'blue'}}>阅读声明</Text>
+              <Text style={{color: 'blue'}} onPress={showNotice}>
+                阅读声明
+              </Text>
               并接受:{' '}
             </Text>
             {/*<RadioGroup*/}

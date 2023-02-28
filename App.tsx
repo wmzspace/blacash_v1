@@ -54,15 +54,15 @@ const toastConfig = {
 export default function App() {
   const [isThemeDark, setIsThemeDark] = React.useState(false);
   const [isMD2Theme, setIsMD2Theme] = React.useState(false);
-  let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
+  // let theme = isThemeDark ? CombinedDarkTheme : CombinedDefaultTheme;
 
-  // let theme = isThemeDark
-  //   ? isMD2Theme
-  //     ? CombinedDarkMD2Theme
-  //     : CombinedDarkTheme
-  //   : isMD2Theme
-  //   ? CombinedDefaultMD2Theme
-  //   : CombinedDefaultTheme;
+  let theme = isThemeDark
+    ? isMD2Theme
+      ? CombinedDarkMD2Theme
+      : CombinedDarkTheme
+    : isMD2Theme
+    ? CombinedDefaultMD2Theme
+    : CombinedDefaultTheme;
 
   const toggleTheme = React.useCallback(() => {
     return setIsThemeDark(!isThemeDark);
@@ -76,8 +76,10 @@ export default function App() {
     () => ({
       toggleTheme,
       isThemeDark,
+      toggleThemeStyle,
+      isMD2Theme,
     }),
-    [toggleTheme, isThemeDark],
+    [toggleTheme, isThemeDark, toggleThemeStyle, isMD2Theme],
   );
   return (
     <>

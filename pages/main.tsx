@@ -62,7 +62,8 @@ export const PhotoGallery = ({route}: Route) => {
 
 const MainScreen = ({navigation}: Props) => {
   const theme = useTheme();
-  const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+  const {toggleTheme, isThemeDark, toggleThemeStyle, isMD2Theme} =
+    React.useContext(PreferencesContext);
   // const {isV3} = useTheme();
 
   const insets = useSafeAreaInsets();
@@ -78,7 +79,7 @@ const MainScreen = ({navigation}: Props) => {
       key: 'album',
       title: 'Album',
       focusedIcon: 'image-album',
-      ...(!theme && {color: '#2962ff'}),
+      ...(theme && !isThemeDark && {color: '#2962ff'}),
     },
     {
       key: 'library',
@@ -108,6 +109,41 @@ const MainScreen = ({navigation}: Props) => {
       ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
     },
   ]);
+  // const [routes] = React.useState<RoutesState>([
+  //   {
+  //     key: 'album',
+  //     title: 'Album',
+  //     focusedIcon: 'image-album',
+  //     ...(theme && !isThemeDark && {color: '#2962ff'}),
+  //   },
+  //   {
+  //     key: 'library',
+  //     title: 'Library',
+  //     focusedIcon: 'inbox',
+  //     badge: true,
+  //     ...(!theme
+  //       ? {unfocusedIcon: 'inbox-outline'}
+  //       : {
+  //           color: '#6200ee',
+  //         }),
+  //   },
+  //   {
+  //     key: 'favorites',
+  //     title: 'Favorites',
+  //     focusedIcon: 'heart',
+  //     ...(!theme
+  //       ? {unfocusedIcon: 'heart-outline'}
+  //       : {
+  //           color: '#00796b',
+  //         }),
+  //   },
+  //   {
+  //     key: 'purchased',
+  //     title: 'Purchased',
+  //     focusedIcon: 'shopping',
+  //     ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
+  //   },
+  // ]);
 
   const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
@@ -164,6 +200,11 @@ const MainScreen = ({navigation}: Props) => {
           color={'black'}
           value={isThemeDark}
           onValueChange={toggleTheme}
+        />
+        <Switch
+          color={'black'}
+          value={isMD2Theme}
+          onValueChange={toggleThemeStyle}
         />
       </Appbar.Header>
       <BottomNavigation
