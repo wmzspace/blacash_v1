@@ -8,6 +8,7 @@ import {
   ScrollView,
   View,
   Image,
+  NativeModules,
 } from 'react-native';
 import {Text} from 'react-native-paper';
 
@@ -15,12 +16,21 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import * as Animatable from 'react-native-animatable';
 import styles from '../styles';
-import {SvgUri} from 'react-native-svg';
 
 import {Provider as PaperProvider} from 'react-native-paper';
 import {serverIPP} from '../values/strings';
 
+import Toast from 'react-native-toast-message';
+
 export default function HomeScreen({navigation}) {
+  // const showToast = () => {
+  //   Toast.show({
+  //     type: 'error',
+  //     text1: 'Hello',
+  //     text2: 'This is some something 👋',
+  //   });
+  // };
+
   const currentVersion = 'demo_1.2';
   let checkUpdate = () => {
     // 43.143.213.226:8088
@@ -75,19 +85,20 @@ export default function HomeScreen({navigation}) {
         }
       })
       .catch(err => {
-        console.log('err', err);
-        Alert.alert('请求失败', err, [
+        // console.log('err', err);
+        Alert.alert('网络请求失败', err.message, [
           {
             text: '退出',
             onPress: () => {
               navigation.navigate('Home');
               BackHandler.exitApp();
+              // NativeModules.ExitManager.exitApp();
             },
           },
         ]);
+        // showToast();
       });
   };
-
   checkUpdate();
 
   return (
@@ -95,17 +106,6 @@ export default function HomeScreen({navigation}) {
       <View style={[styles.container]}>
         <StatusBarComp isDarkStyle="true" />
         <Animatable.View animation="fadeIn" style={{flex: 1}} delay={500}>
-          {/*<Text*/}
-          {/*  style={{*/}
-          {/*    color: '#fcfcfc',*/}
-          {/*    textAlign: 'center',*/}
-          {/*    marginTop: 100,*/}
-          {/*    fontSize: 45,*/}
-          {/*    flex: 1,*/}
-          {/*    fontFamily: '',*/}
-          {/*  }}>*/}
-          {/*  BlaCash*/}
-          {/*</Text>*/}
           <Image
             style={{
               flex: 1,
@@ -153,5 +153,3 @@ export default function HomeScreen({navigation}) {
     </PaperProvider>
   );
 }
-
-
