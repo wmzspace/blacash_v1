@@ -191,63 +191,63 @@ app.post('/login', function (req, res) {
 });
 
 // Dealing send request
-app.post('/send', function (req, res) {
-  const addSql = 'INSERT INTO messages(id,msg,sender) VALUES(0,?,?)';
-  const addSqlParams = [req.body.message, req.body.sender];
+// app.post('/send', function (req, res) {
+//   const addSql = 'INSERT INTO messages(id,msg,sender) VALUES(0,?,?)';
+//   const addSqlParams = [req.body.message, req.body.sender];
+//
+//   // Add new message into MySQL
+//   connection.query(addSql, addSqlParams, function (err, result) {
+//     if (err) {
+//       console.log('[INSERT ERROR] - ', err.message);
+//       return;
+//     }
+//
+//     console.log('--------------------------INSERT----------------------------');
+//     console.log('INSERT ID:', result);
+//     console.log(
+//       '-----------------------------------------------------------------\n\n',
+//     );
+//   });
 
-  // Add new message into MySQL
-  connection.query(addSql, addSqlParams, function (err, result) {
-    if (err) {
-      console.log('[INSERT ERROR] - ', err.message);
-      return;
-    }
-
-    console.log('--------------------------INSERT----------------------------');
-    console.log('INSERT ID:', result);
-    console.log(
-      '-----------------------------------------------------------------\n\n',
-    );
-  });
-
-  // Get immediate messages database
-  connection.query('SELECT * FROM messages', function (err, result) {
-    if (err) {
-      console.log('[SELECT ERROR] - ', err.message);
-      return;
-    }
-
-    console.log('--------------------------SELECT----------------------------');
-    for (let msg of result) {
-      console.log(msg);
-    }
-    console.log('------------------------------------------------------------');
-
-    res.end(JSON.stringify(result)); // Send the messages json back.
-  });
-
-  // res.end('-1')
-});
+//   // Get immediate messages database
+//   connection.query('SELECT * FROM messages', function (err, result) {
+//     if (err) {
+//       console.log('[SELECT ERROR] - ', err.message);
+//       return;
+//     }
+//
+//     console.log('--------------------------SELECT----------------------------');
+//     for (let msg of result) {
+//       console.log(msg);
+//     }
+//     console.log('------------------------------------------------------------');
+//
+//     res.end(JSON.stringify(result)); // Send the messages json back.
+//   });
+//
+//   // res.end('-1')
+// });
 
 // Dealing refresh request
-app.get('/refresh', function (req, res) {
-  var sql = 'SELECT * FROM messages';
-
-  //Get current messages database
-  connection.query(sql, function (err, result) {
-    if (err) {
-      console.log('[SELECT ERROR] - ', err.message);
-      return;
-    }
-
-    console.log('--------------------------SELECT----------------------------');
-    for (let msg of result) {
-      console.log(msg);
-    }
-    console.log('------------------------------------------------------------');
-
-    res.end(JSON.stringify(result)); // Send the messages json back.
-  });
-});
+// app.get('/refresh', function (req, res) {
+//   var sql = 'SELECT * FROM messages';
+//
+//   //Get current messages database
+//   connection.query(sql, function (err, result) {
+//     if (err) {
+//       console.log('[SELECT ERROR] - ', err.message);
+//       return;
+//     }
+//
+//     console.log('--------------------------SELECT----------------------------');
+//     for (let msg of result) {
+//       console.log(msg);
+//     }
+//     console.log('------------------------------------------------------------');
+//
+//     res.end(JSON.stringify(result)); // Send the messages json back.
+//   });
+// });
 
 app.get('/nftimg', function (req, res) {
   connection.query('select * from nftimg', function (err, result) {
@@ -260,6 +260,37 @@ app.get('/nftimg', function (req, res) {
   });
 });
 // });
+
+app.post('/upload', function (req, res) {
+  let reqJSON;
+  for (let key in JSON.parse(JSON.stringify(req.body))) {
+    reqJSON = JSON.parse(key);
+    break;
+  }
+  let addSqlParams = [
+    reqJSON.url,
+    reqJSON.nftName,
+    reqJSON.nftDescription,
+    reqJSON.owner,
+    reqJSON.fee,
+  ];
+  // console.log(reqJSON);
+  // res.end(0);
+
+  // console.log(reqJSON);
+  // console.log(addSqlParams);
+  connection.query(
+    'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
+    addSqlParams,
+    function (err, result) {
+      if (err) {
+        console.log('[SELECT ERROR] - ', err.message);
+        return;
+      }
+      res.end(JSON.stringify(reqJSON));
+    },
+  );
+});
 
 app.listen(8085, function () {
   console.log('应用实例，访问地址为 http://127.0.0.1:8085');

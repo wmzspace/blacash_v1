@@ -10,41 +10,50 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {Searchbar} from 'react-native-paper';
+import {Searchbar, Text} from 'react-native-paper';
 import ScreenWrapper from '../@components/ScreenWrapper';
+import {globalVal, userInfo} from '../values/global';
+import {getNftImgs} from '../apis/api';
 
 export const NftGallery = () => {
   const [refreshing, setRefreshing] = React.useState(false);
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    getNftImgs();
+    await getNftImgs();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
   }, []);
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
 
   const [nftImgs, setnftImgs] = React.useState([]);
-  const getNftImgs = () => {
-    fetch('http:/' + serverIPP + '/nftimg', {
-      method: 'GET',
-    })
-      .then(res => {
-        if (res.ok) {
-          res.json().then(resData => {
-            // console.log(resData);
-            setnftImgs(resData);
-            setTimeout(() => {
-              setRefreshing(false);
-            }, 1000);
-          });
-        } else {
-          console.error('res error when getting nftImgs!');
-        }
-      })
-      .catch(e => {
-        console.log(e.message);
-      });
-  };
+  // const getNftImgs = () => {
+  //   fetch('http:/' + serverIPP + '/nftimg', {
+  //     method: 'GET',
+  //   })
+  //     .then(res => {
+  //       if (res.ok) {
+  //         res.json().then(resData => {
+  //           // console.log(resData);
+  //           setnftImgs(resData);
+  //           userInfo.ownedNfts = resData?.map((nftImg, index) => {
+  //             return nftImg?.owner === userInfo.email ? nftImg : null;
+  //           });
+  //           console.log(userInfo.ownedNfts);
+  //           setTimeout(() => {
+  //             setRefreshing(false);
+  //           }, 1000);
+  //         });
+  //       } else {
+  //         console.error('res error when getting nftImgs!');
+  //       }
+  //     })
+  //     .catch(e => {
+  //       console.log(e.message);
+  //     });
+  // };
   React.useState(onRefresh);
 
   // console.log(nftImgs);
@@ -63,9 +72,11 @@ export const NftGallery = () => {
         }}
         // theme={theme}
       />
+      <Text style={{textAlign: 'center', marginVertical: 10, fontSize: 20}}>
+        All Ntfs ({globalVal.allNfts?.length})
+      </Text>
       <ScreenWrapper contentContainerStyle={styles.content}>
-        {nftImgs?.map((nftImg, index) => {
-          // console.log(uri.url);
+        {globalVal.allNfts?.map((nftImg, index) => {
           return (
             <View key={nftImg?.id} style={styles.item}>
               <Image source={{uri: nftImg?.url}} style={styles.photo} />

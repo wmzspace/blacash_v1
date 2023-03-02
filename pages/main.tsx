@@ -1,3 +1,5 @@
+// TODO: 0没审的，1审过没出售的，2正在出售所有权，3正在出售使用权
+
 import * as React from 'react';
 import {
   View,
@@ -21,12 +23,12 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StatusBarComp} from '../@components/StatusBarComp';
 import {PreferencesContext} from '../context/preference';
 import {serverIPP} from '../values/strings';
-import {NftGallery} from './nftGallery';
 
 import ScreenWrapper from '../@components/ScreenWrapper';
 import type {StackNavigationProp} from '@react-navigation/stack';
 // import {PhotoGallery} from './photoGallery';
 import {main_styles} from '../ui/main_styles';
+
 type Route = {route: {key: string}};
 
 type RoutesState = Array<{
@@ -39,6 +41,12 @@ type RoutesState = Array<{
   getAccessibilityLabel?: string;
   getTestID?: string;
 }>;
+
+import {userInfo} from '../values/global';
+import {NftGallery} from './nftGallery';
+import {OwnedGallery} from './ownedGallery';
+import {UploadScreen} from './uploadPage';
+import {AccountScreen} from './accountPage';
 
 type Props = {
   navigation: StackNavigationProp<{}>;
@@ -60,7 +68,10 @@ export const PhotoGallery = ({route}: Route) => {
   );
 };
 
-const MainScreen = ({navigation}: Props) => {
+const MainScreen = ({route, navigation}) => {
+  const {email} = route.params;
+  userInfo.email = email;
+
   const theme = useTheme();
   const {toggleTheme, isThemeDark, toggleThemeStyle, isMD2Theme} =
     React.useContext(PreferencesContext);
@@ -83,7 +94,7 @@ const MainScreen = ({navigation}: Props) => {
     },
     {
       key: 'library',
-      title: 'Library',
+      title: 'Owned',
       focusedIcon: 'inbox',
       badge: true,
       ...(!theme
@@ -93,57 +104,24 @@ const MainScreen = ({navigation}: Props) => {
           }),
     },
     {
+      key: 'purchased',
+      title: 'Upload',
+      focusedIcon: 'upload',
+      // focusedIcon: 'shopping',
+      ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
+    },
+    {
       key: 'favorites',
-      title: 'Favorites',
-      focusedIcon: 'heart',
+      title: 'Account',
+      focusedIcon: 'account',
+      // focusedIcon: 'heart',
       ...(!theme
         ? {unfocusedIcon: 'heart-outline'}
         : {
             color: '#00796b',
           }),
     },
-    {
-      key: 'purchased',
-      title: 'Purchased',
-      focusedIcon: 'shopping',
-      ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
-    },
   ]);
-  // const [routes] = React.useState<RoutesState>([
-  //   {
-  //     key: 'album',
-  //     title: 'Album',
-  //     focusedIcon: 'image-album',
-  //     ...(theme && !isThemeDark && {color: '#2962ff'}),
-  //   },
-  //   {
-  //     key: 'library',
-  //     title: 'Library',
-  //     focusedIcon: 'inbox',
-  //     badge: true,
-  //     ...(!theme
-  //       ? {unfocusedIcon: 'inbox-outline'}
-  //       : {
-  //           color: '#6200ee',
-  //         }),
-  //   },
-  //   {
-  //     key: 'favorites',
-  //     title: 'Favorites',
-  //     focusedIcon: 'heart',
-  //     ...(!theme
-  //       ? {unfocusedIcon: 'heart-outline'}
-  //       : {
-  //           color: '#00796b',
-  //         }),
-  //   },
-  //   {
-  //     key: 'purchased',
-  //     title: 'Purchased',
-  //     focusedIcon: 'shopping',
-  //     ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
-  //   },
-  // ]);
 
   const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
@@ -201,11 +179,11 @@ const MainScreen = ({navigation}: Props) => {
           value={isThemeDark}
           onValueChange={toggleTheme}
         />
-        <Switch
-          color={'black'}
-          value={isMD2Theme}
-          onValueChange={toggleThemeStyle}
-        />
+        {/*<Switch*/}
+        {/*  color={'black'}*/}
+        {/*  value={isMD2Theme}*/}
+        {/*  onValueChange={toggleThemeStyle}*/}
+        {/*/>*/}
       </Appbar.Header>
       <BottomNavigation
         safeAreaInsets={{bottom: insets.bottom}}
@@ -214,9 +192,9 @@ const MainScreen = ({navigation}: Props) => {
         labelMaxFontSizeMultiplier={2}
         renderScene={BottomNavigation.SceneMap({
           album: NftGallery,
-          library: PhotoGallery,
-          favorites: PhotoGallery,
-          purchased: PhotoGallery,
+          library: OwnedGallery,
+          favorites: AccountScreen,
+          purchased: UploadScreen,
         })}
         sceneAnimationEnabled={sceneAnimation !== undefined}
         sceneAnimationType={sceneAnimation}

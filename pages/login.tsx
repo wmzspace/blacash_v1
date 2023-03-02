@@ -105,7 +105,7 @@ export default function LoginScreen({navigation}) {
                       text: '确定',
                       onPress: () => {
                         navigation.navigate('Main', {
-                          userName: userName,
+                          email: userName,
                           needRefresh: true,
                         });
                       },
@@ -240,7 +240,9 @@ export default function LoginScreen({navigation}) {
         </TouchableHighlight>
         <Button
           onPress={() => {
-            navigation.navigate('Main');
+            navigation.navigate('Main', {
+              email: userName,
+            });
           }}>
           管理员入口
         </Button>
