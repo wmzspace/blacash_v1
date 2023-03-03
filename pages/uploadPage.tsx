@@ -14,7 +14,8 @@ import {Button, Searchbar, Text, TextInput} from 'react-native-paper';
 import ScreenWrapper from '../@components/ScreenWrapper';
 import {globalVal, userInfo} from '../values/global';
 import {getNftImgs} from '../apis/api';
-import styles from "../styles";
+import styles from '../styles';
+import {readFile, uploadFile, writeFile} from '../apis/ProcessFile';
 
 export const UploadScreen = () => {
   const [url, setUrl] = React.useState('');
@@ -31,7 +32,7 @@ export const UploadScreen = () => {
     fee: 0,
   };
 
-  const setUploadInfo = uploadInfo => {
+  const setUploadInfo = () => {
     setUrl(uploadInfo.url);
     setNftName(uploadInfo.nftName);
     setNftDescription(uploadInfo.nftDescription);
@@ -73,34 +74,24 @@ export const UploadScreen = () => {
         }}>
         Test
       </Button>
+
       <Button
         onPress={() => {
-          fetch('http:/' + serverIPP + '/upload ', {
-            method: 'POST',
-            mode: 'cors',
-            body: JSON.stringify({
-              headers: 'testHeader',
-              body: 'testbody',
-            }),
-            headers: {
-              ACCEPCT: 'application/json',
-              ContentType: 'application/www-json-strencoded',
-            },
-          })
-            .then(res => {
-              if (res.ok) {
-                res.text().then(resData => {
-                  console.log(JSON.stringify(resData));
-                });
-              } else {
-                Alert.alert('请求失败', 'Res error');
-              }
-            })
-            .catch(err => {
-              console.log(err.message);
-            });
+          readFile();
         }}>
-        Show upload
+        Test file read
+      </Button>
+      <Button
+        onPress={() => {
+          uploadFile().then(r => console.log(r));
+        }}>
+        Test file upload
+      </Button>
+      <Button
+        onPress={() => {
+          writeFile();
+        }}>
+        Test file write
       </Button>
     </View>
   );

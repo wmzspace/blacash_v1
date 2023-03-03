@@ -4,7 +4,7 @@ console.clear();
 var express = require('express');
 //Post方式请求参数放在请求体里面，需引用body-parser解析body
 var bodyParser = require('body-parser');
-// var multer = require('multer'); //用于接收文件
+var multer = require('multer'); //用于接收文件
 // var upload = multer({dest: 'uploads/'});
 
 var app = express();
@@ -261,12 +261,29 @@ app.get('/nftimg', function (req, res) {
 });
 // });
 
-app.post('/upload', function (req, res) {
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({storage: storage});
+const imgBaseUrl = '..';
+
+app.post('/upload', upload.single('img'), function (req, res, next) {
+  console.log('start!!!');
+  let files = req.file;
+  console.log('Uploading file:' + files);
+  // let id = req.body.id;
   let reqJSON;
   for (let key in JSON.parse(JSON.stringify(req.body))) {
     reqJSON = JSON.parse(key);
     break;
   }
+
   let addSqlParams = [
     reqJSON.url,
     reqJSON.nftName,
@@ -274,11 +291,6 @@ app.post('/upload', function (req, res) {
     reqJSON.owner,
     reqJSON.fee,
   ];
-  // console.log(reqJSON);
-  // res.end(0);
-
-  // console.log(reqJSON);
-  // console.log(addSqlParams);
   connection.query(
     'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
     addSqlParams,
