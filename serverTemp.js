@@ -263,7 +263,8 @@ app.get('/nftimg', function (req, res) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './public/images');
+    // cb(null, './');
+    cb(null, './public/files');
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -273,7 +274,8 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const imgBaseUrl = '..';
 
-app.post('/upload', upload.single('img'), function (req, res, next) {
+app.post('/upload', upload.array('files'), function (req, res, next) {
+  console.log('------------------------------');
   console.log('start!!!');
   let files = req.file;
   console.log('Uploading file:' + files);
@@ -284,24 +286,26 @@ app.post('/upload', upload.single('img'), function (req, res, next) {
     break;
   }
 
-  let addSqlParams = [
-    reqJSON.url,
-    reqJSON.nftName,
-    reqJSON.nftDescription,
-    reqJSON.owner,
-    reqJSON.fee,
-  ];
-  connection.query(
-    'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
-    addSqlParams,
-    function (err, result) {
-      if (err) {
-        console.log('[SELECT ERROR] - ', err.message);
-        return;
-      }
-      res.end(JSON.stringify(reqJSON));
-    },
-  );
+  // console.log(req);
+
+  // let addSqlParams = [
+  //   reqJSON.url,
+  //   reqJSON.nftName,
+  //   reqJSON.nftDescription,
+  //   reqJSON.owner,
+  //   reqJSON.fee,
+  // ];
+  // connection.query(
+  //   'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
+  //   addSqlParams,
+  //   function (err, result) {
+  //     if (err) {
+  //       console.log('[SELECT ERROR] - ', err.message);
+  //       return;
+  //     }
+  //     res.end(JSON.stringify(reqJSON));
+  //   },
+  // );
 });
 
 app.listen(8085, function () {

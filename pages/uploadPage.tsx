@@ -15,7 +15,7 @@ import ScreenWrapper from '../@components/ScreenWrapper';
 import {globalVal, userInfo} from '../values/global';
 import {getNftImgs} from '../apis/api';
 import styles from '../styles';
-import {readFile, uploadFile, writeFile} from '../apis/ProcessFile';
+import {readFile, uploadFile, write_file, writeFile} from '../apis/ProcessFile';
 
 export const UploadScreen = () => {
   const [url, setUrl] = React.useState('');
@@ -89,7 +89,7 @@ export const UploadScreen = () => {
       </Button>
       <Button
         onPress={() => {
-          writeFile();
+          write_file();
         }}>
         Test file write
       </Button>

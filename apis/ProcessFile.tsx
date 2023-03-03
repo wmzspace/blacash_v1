@@ -4,6 +4,7 @@
 import RNFS from 'react-native-fs';
 import {serverIPP} from '../values/strings';
 import {PermissionsAndroid, Platform} from 'react-native';
+import {userInfo} from '../values/global';
 
 const requestPermission = async () => {
   try {
@@ -43,22 +44,26 @@ export function readFile() {
   //获取文件列表和目录
   RNFS.readDir(RNFS.ExternalDirectoryPath)
     .then(async result => {
-      console.log('GOT RESULT', result);
+      if (result.length) {
+        console.log('GOT RESULT', result);
 
-      for (let file of result) {
-        console.log('----------------------');
-        console.log('filename:' + file.name);
-        await RNFS.readFile(file.path, 'utf8').then(content => {
-          console.log(content);
-        });
-        console.log('----------------------');
+        for (let file of result) {
+          console.log('----------------------');
+          console.log('filename:' + file.name);
+          await RNFS.readFile(file.path, 'utf8').then(content => {
+            console.log(content);
+          });
+          console.log('----------------------');
 
-        // console.log('content:' + file.content);
-        // console.log('');
+          // console.log('content:' + file.content);
+          // console.log('');
+        }
+        // stat the second file，找到第二个 文件
+
+        return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+      } else {
+        throw 'No file found';
       }
-      // stat the second file，找到第二个 文件
-
-      return Promise.all([RNFS.stat(result[0].path), result[0].path]);
     })
     .then(statResult => {
       /**
@@ -88,7 +93,7 @@ export function readFile() {
       // console.log(contents);   //TODO readFile - content
     })
     .catch(err => {
-      console.log(err.message, err.code);
+      console.log(err);
     });
 }
 
@@ -112,14 +117,22 @@ export const uploadFile = async () => {
   //   });
 
   var uploadUrl = 'http://' + serverIPP + '/upload'; // For testing purposes, go to http://requestb.in/ and create your own link，测试上传路径
+  // var uploadUrl = RNFS.ExternalDirectoryPath + '/test.txt';
   // create an array of objects of the files you want to upload
   // 创建一个想要上传文件的数组
   var files = [
+    // {
+    //   name: 'files',
+    //   filename: 'test.txt',
+    //   filepath: RNFS.ExternalDirectoryPath + '/test.txt',
+    //   filetype: 'json',
+    //   // filetype: 'audio/x-m4a',
+    // },
     {
-      name: 'test1',
-      filename: 'test_1.txt',
-      filepath: RNFS.ExternalDirectoryPath + '/test.txt',
-      filetype: 'json',
+      name: 'files',
+      filename: 'test.png',
+      filepath: RNFS.ExternalDirectoryPath + '/test.png',
+      filetype: 'png',
       // filetype: 'audio/x-m4a',
     },
     // {
@@ -132,14 +145,16 @@ export const uploadFile = async () => {
   //上传开始回调
   var uploadBegin = response => {
     var jobId = response.jobId;
+    console.log('');
     console.log('UPLOAD HAS BEGUN! JobId: ' + jobId);
   };
   //上传进度回调
-  var uploadProgress = response => {
-    var percentage = Math.floor(
-      (response.totalBytesSent / response.totalBytesExpectedToSend) * 100,
-    );
-    console.log('UPLOAD IS ' + percentage + '% DONE!');
+  const uploadProgress = response => {
+    // console.clear();
+    // let percentage = Math.floor(
+    //   (response.totalBytesSent / response.totalBytesExpectedToSend) * 100,
+    // );
+    // console.log('UPLOAD IS ' + percentage + '% DONE!');
   };
 
   // upload files
@@ -151,9 +166,14 @@ export const uploadFile = async () => {
     headers: {
       Accept: 'application/json', //请求header
     },
-    fields: {
-      hello: 'world',
-    },
+
+    // fields: {
+    //   hello: 'world',
+    //   name: 'file',
+    // },
+    // fields: {
+    //   hello: 'world',
+    // },
     begin: uploadBegin, //上传开始回调
     progress: uploadProgress, //上传进度回调
   })
@@ -174,7 +194,7 @@ export const uploadFile = async () => {
     });
 };
 
-export const writeFile = () => {
+export const write_file = () => {
   let path = RNFS.ExternalDirectoryPath + '/test.txt';
   RNFS.writeFile(path, 'content: ' + path, 'utf8')
     .then(success => {
