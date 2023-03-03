@@ -274,9 +274,9 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const imgBaseUrl = '..';
 
-app.post('/upload', upload.array('files'), function (req, res, next) {
-  console.log('------------------------------');
-  console.log('start!!!');
+app.post('/upload', upload.single('files'), function (req, res, next) {
+  // console.log('------------------------------');
+  // console.log('start!!!');
   let files = req.file;
   console.log('Uploading file:' + files);
   // let id = req.body.id;
@@ -286,6 +286,7 @@ app.post('/upload', upload.array('files'), function (req, res, next) {
     break;
   }
 
+  console.log(files);
   // console.log(req);
 
   // let addSqlParams = [
