@@ -5,6 +5,7 @@ var express = require('express');
 //Post方式请求参数放在请求体里面，需引用body-parser解析body
 var bodyParser = require('body-parser');
 var multer = require('multer'); //用于接收文件
+var fs = require('fs'); // 引入fs模块
 // var upload = multer({dest: 'uploads/'});
 
 var app = express();
@@ -286,7 +287,22 @@ app.post('/upload', upload.single('files'), function (req, res, next) {
     break;
   }
 
-  console.log(files);
+  let relativeDir = files.path.replace(/\\/g, '/');
+  let rootDir = 'https://wmzspace.space/blacash/';
+  // console.log(rootDir + relativeDir);
+  let addSqlParams = [rootDir + relativeDir, 'temp', 'temp', 'temp', 1.0];
+  connection.query(
+    'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
+    addSqlParams,
+    function (err, result) {
+      if (err) {
+        console.log('[SELECT ERROR] - ', err.message);
+        return;
+      }
+      res.end(JSON.stringify(reqJSON));
+    },
+  );
+  res.end(JSON.stringify(files));
   // console.log(req);
 
   // let addSqlParams = [
@@ -296,19 +312,27 @@ app.post('/upload', upload.single('files'), function (req, res, next) {
   //   reqJSON.owner,
   //   reqJSON.fee,
   // ];
-  // connection.query(
-  //   'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
-  //   addSqlParams,
-  //   function (err, result) {
-  //     if (err) {
-  //       console.log('[SELECT ERROR] - ', err.message);
-  //       return;
-  //     }
-  //     res.end(JSON.stringify(reqJSON));
-  //   },
-  // );
 });
 
-app.listen(8085, function () {
+// app.post('uploadImg', (req, res) => {
+//   let base_64_url = req.body;
+//
+//   let path = './public/image/' + Date.now() + '.png'; //路径从app.js级开始找--
+//   let base64 = base_64_url.replace(/^data:image\/\w+;base64,/, ''); //去掉图片base64码前面部分data:image/png;base64
+//   let dataBuffer = new Buffer(base64, 'base64'); //把base64码转成buffer对象，
+//   console.log('dataBuffer是否是Buffer对象：' + Buffer.isBuffer(dataBuffer)); // 输出是否是buffer对象
+//   fs.writeFile(path, dataBuffer, function (err) {
+//     //用fs写入文件
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       console.log('写入成功！');
+//     }
+//   });
+//
+//   res.end(0);
+// });
+
+app.listen(8089, function () {
   console.log('应用实例，访问地址为 http://127.0.0.1:8085');
 });

@@ -3,8 +3,7 @@
 
 import RNFS from 'react-native-fs';
 import {serverIPP} from '../values/strings';
-import {PermissionsAndroid, Platform} from 'react-native';
-import {userInfo} from '../values/global';
+import {Alert, PermissionsAndroid} from 'react-native';
 
 const requestPermission = async () => {
   try {
@@ -40,6 +39,8 @@ const requestPermission = async () => {
 
 export function readFile() {
   console.log('');
+
+  // RNFS.ExternalDirectoryPath
   // console.log(RNFS.ExternalDirectoryPath);
   //获取文件列表和目录
   RNFS.readDir(RNFS.ExternalDirectoryPath)
@@ -97,7 +98,7 @@ export function readFile() {
     });
 }
 
-export const uploadFile = async () => {
+export const uploadFile = async fileInfo => {
   await requestPermission();
   // .then(r => console.log(r));
   // console.log('DocumentDirectoryPath: ' + RNFS.DocumentDirectoryPath);
@@ -120,6 +121,8 @@ export const uploadFile = async () => {
   // var uploadUrl = RNFS.ExternalDirectoryPath + '/test.txt';
   // create an array of objects of the files you want to upload
   // 创建一个想要上传文件的数组
+  // console.log(fileInfo.uri + '/' + fileInfo.name);
+  console.log(fileInfo);
   var files = [
     // {
     //   name: 'files',
@@ -130,9 +133,9 @@ export const uploadFile = async () => {
     // },
     {
       name: 'files',
-      filename: 'test.png',
-      filepath: RNFS.ExternalDirectoryPath + '/test.png',
-      filetype: 'png',
+      filename: fileInfo.name,
+      filepath: RNFS.ExternalDirectoryPath + '/' + fileInfo.name,
+      filetype: 'image/jpeg',
       // filetype: 'audio/x-m4a',
     },
     // {
@@ -177,13 +180,18 @@ export const uploadFile = async () => {
     begin: uploadBegin, //上传开始回调
     progress: uploadProgress, //上传进度回调
   })
-    .promise.then(response => {
+    .promise.then(res => {
       //HTTP response响应
-      if (response.statusCode === 200) {
-        console.log('FILES UPLOADED!'); // response.statusCode状态码, response.headers响应header, response.body 响应body
-      } else {
-        console.log('SERVER ERROR');
+
+      if (res) {
+        Alert.alert('上传成功！', JSON.parse(res.body).originalname);
       }
+      // console.log(response.body);
+      // if (response.statusCode === 200) {
+      //   console.log('FILES UPLOADED!'); // response.statusCode状态码, response.headers响应header, response.body 响应body
+      // } else {
+      //   console.log('SERVER ERROR');
+      // }
     })
     .catch(err => {
       //HTTP请求异常
@@ -194,14 +202,20 @@ export const uploadFile = async () => {
     });
 };
 
-export const write_file = () => {
-  let path = RNFS.ExternalDirectoryPath + '/test.txt';
-  RNFS.writeFile(path, 'content: ' + path, 'utf8')
-    .then(success => {
-      console.log('');
-      console.log('FILE WRITTEN' + ' ' + path);
+export const write_file = fileInfo => {
+  let path = RNFS.ExternalDirectoryPath + '/' + fileInfo.name;
+  RNFS.readFile(fileInfo.uri, 'base64')
+    .then(content => {
+      RNFS.writeFile(path, content, 'base64')
+        .then(success => {
+          console.log('');
+          console.log('FILE WRITTEN' + ' ' + path);
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
     })
     .catch(err => {
-      console.log(err.message);
+      console.log(err);
     });
 };
