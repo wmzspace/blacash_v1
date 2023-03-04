@@ -18,6 +18,7 @@ import {
   Text,
   TextInput,
   useTheme,
+  ProgressBar,
 } from 'react-native-paper';
 import ScreenWrapper from '../@components/ScreenWrapper';
 import {globalVal, userInfo} from '../values/global';
@@ -29,6 +30,7 @@ import DocumentPicker from 'react-native-document-picker';
 import {theme} from '../ui/themes_old';
 import {PreferencesContext} from '../context/preference';
 import RNFS from 'react-native-fs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const UploadScreen = () => {
   const [url, setUrl] = React.useState('');
@@ -36,6 +38,7 @@ export const UploadScreen = () => {
   const [nftDescription, setNftDescription] = React.useState('');
   const [owner, setOwner] = React.useState('');
   const [fee, setFee] = React.useState(0);
+  const [uploadPercentage, setUploadPercentage] = React.useState(0);
 
   let uploadInfo = {
     url: '',
@@ -241,10 +244,39 @@ export const UploadScreen = () => {
             labelStyle={{fontSize: 18}}
             onPress={() => {
               console.log(fileResponse[0]);
+              setUploadPercentage(0);
               uploadFile(fileResponse[0]);
+              let temp = setInterval(async () => {
+                try {
+                  const value = await AsyncStorage.getItem('@uploadPercentage');
+                  if (value !== null) {
+                    // value previously stored
+                    let pValue = JSON.parse(value);
+                    console.log(pValue.value);
+                    setUploadPercentage(pValue.value);
+                    if (pValue.value === 1) {
+                      clearTimeout(temp);
+                    }
+                  }
+                } catch (e) {
+                  // error reading value
+                  console.log(e);
+                }
+              }, 1);
+              setTimeout(() => {
+                clearTimeout(temp);
+              }, 3000);
             }}>
             上传
           </Button>
+
+          {/*<Button labelStyle={{fontSize: 18}} onPress={getPercentage}>*/}
+          {/*  测试*/}
+          {/*</Button>*/}
+          <ProgressBar progress={uploadPercentage} indeterminate={false} />
+          {/*<ProgressBar*/}
+          {/*  progress={parseInt()}*/}
+          {/*/>*/}
         </View>
         {fileResponse.map((file, index) => (
           <View key={index.toString()}>
