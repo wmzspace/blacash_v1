@@ -1,28 +1,11 @@
 import * as React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableHighlight,
-  useColorScheme,
-  ToastAndroid,
-  Alert,
-} from 'react-native';
+import {StyleSheet, View, TouchableHighlight, Alert} from 'react-native';
 
-import {
-  configureFonts,
-  MD2LightTheme,
-  Text,
-  TextInput,
-  Provider as PaperProvider,
-  HelperText,
-  useTheme,
-  Button,
-} from 'react-native-paper';
+import {Text, TextInput, HelperText, Button} from 'react-native-paper';
 
 import {StatusBarComp} from '../@components/StatusBarComp';
 import styles from '../styles';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {theme} from '../ui/themes';
+
 import {serverIPP} from '../values/strings';
 import {PreferencesContext} from '../context/preference';
 
@@ -129,8 +112,8 @@ export default function LoginScreen({navigation}) {
       });
   };
 
-  const theme = useTheme();
-  const {toggleTheme, isThemeDark} = React.useContext(PreferencesContext);
+  // const theme = useTheme();
+  const {isThemeDark} = React.useContext(PreferencesContext);
 
   return (
     <View style={[styles.container]}>
@@ -234,9 +217,8 @@ export default function LoginScreen({navigation}) {
               ? [styles.button, {backgroundColor: 'blue'}]
               : styles.disabledButton
           }>
-          <Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>
-            登录
-          </Text>
+          {/*<Text style={[style.buttonText, {color: '#f5fcfa', fontSize: 16}]}>*/}
+          <Text style={[{color: '#f5fcfa', fontSize: 16}]}>登录</Text>
         </TouchableHighlight>
         <Button
           onPress={() => {

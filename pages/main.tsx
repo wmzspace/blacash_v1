@@ -42,7 +42,7 @@ type RoutesState = Array<{
   getTestID?: string;
 }>;
 
-import {userInfo} from '../values/global';
+import {globalVal, userInfo} from '../values/global';
 import {NftGallery} from './nftGallery';
 import {OwnedGallery} from './ownedGallery';
 import {UploadScreen} from './uploadPage';
@@ -69,6 +69,8 @@ export const PhotoGallery = ({route}: Route) => {
 };
 
 const MainScreen = ({route, navigation}) => {
+  globalVal.uploadUrl = '';
+
   const {email} = route.params;
   userInfo.email = email;
 
@@ -88,13 +90,13 @@ const MainScreen = ({route, navigation}) => {
   const [routes] = React.useState<RoutesState>([
     {
       key: 'album',
-      title: 'Album',
+      title: '作品',
       focusedIcon: 'image-album',
       ...(theme && !isThemeDark && {color: '#2962ff'}),
     },
     {
       key: 'library',
-      title: 'Owned',
+      title: '管理',
       focusedIcon: 'inbox',
       badge: true,
       ...(!theme
@@ -105,14 +107,14 @@ const MainScreen = ({route, navigation}) => {
     },
     {
       key: 'purchased',
-      title: 'Upload',
+      title: '上传',
       focusedIcon: 'upload',
       // focusedIcon: 'shopping',
       ...(!theme ? {unfocusedIcon: 'shopping-outline'} : {color: '#c51162'}),
     },
     {
       key: 'favorites',
-      title: 'Account',
+      title: '账户',
       focusedIcon: 'account',
       // focusedIcon: 'heart',
       ...(!theme

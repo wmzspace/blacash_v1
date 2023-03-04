@@ -275,22 +275,40 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const imgBaseUrl = '..';
 
-app.post('/upload', upload.single('files'), function (req, res, next) {
+app.post('/imgUrl', upload.single('files'), function (req, res, next) {
   // console.log('------------------------------');
   // console.log('start!!!');
   let files = req.file;
   console.log('Uploading file:' + files);
   // let id = req.body.id;
+  let relativeDir = files.path.replace(/\\/g, '/');
+  let rootDir = 'https://wmzspace.space/blacash/';
+
+  res.end(
+    JSON.stringify({
+      url: rootDir + relativeDir,
+      fileName: files.originalname,
+    }),
+  );
+  // console.log(req);
+});
+
+app.post('/upload', (req, res) => {
   let reqJSON;
   for (let key in JSON.parse(JSON.stringify(req.body))) {
     reqJSON = JSON.parse(key);
     break;
   }
+  let addSqlParams = [
+    reqJSON.url,
+    reqJSON.nftName,
+    reqJSON.nftDescription,
+    reqJSON.owner,
+    reqJSON.fee,
+  ];
 
-  let relativeDir = files.path.replace(/\\/g, '/');
-  let rootDir = 'https://wmzspace.space/blacash/';
   // console.log(rootDir + relativeDir);
-  let addSqlParams = [rootDir + relativeDir, 'temp', 'temp', 'temp', 1.0];
+  // let addSqlParams = [rootDir + relativeDir, 'temp', 'temp', 'temp', 1.0];
   connection.query(
     'insert into appsubmit( url, nftname, nftdescription, owner, fee) values(?,?,?,?,?)',
     addSqlParams,
@@ -302,16 +320,6 @@ app.post('/upload', upload.single('files'), function (req, res, next) {
       res.end(JSON.stringify(reqJSON));
     },
   );
-  res.end(JSON.stringify(files));
-  // console.log(req);
-
-  // let addSqlParams = [
-  //   reqJSON.url,
-  //   reqJSON.nftName,
-  //   reqJSON.nftDescription,
-  //   reqJSON.owner,
-  //   reqJSON.fee,
-  // ];
 });
 
 // app.post('uploadImg', (req, res) => {
@@ -334,5 +342,5 @@ app.post('/upload', upload.single('files'), function (req, res, next) {
 // });
 
 app.listen(8089, function () {
-  console.log('应用实例，访问地址为 http://127.0.0.1:8085');
+  console.log('应用实例，访问地址为 http://127.0.0.1:8089');
 });

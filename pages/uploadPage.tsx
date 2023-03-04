@@ -31,6 +31,7 @@ import {theme} from '../ui/themes_old';
 import {PreferencesContext} from '../context/preference';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {length} from 'deepmerge';
 
 export const UploadScreen = () => {
   const [url, setUrl] = React.useState('');
@@ -38,22 +39,56 @@ export const UploadScreen = () => {
   const [nftDescription, setNftDescription] = React.useState('');
   const [owner, setOwner] = React.useState('');
   const [fee, setFee] = React.useState(0);
+  const [remark, setRemark] = React.useState('');
   const [uploadPercentage, setUploadPercentage] = React.useState(0);
 
-  let uploadInfo = {
-    url: '',
-    nftName: '',
-    nftDescription: '',
-    owner: '',
-    fee: 0,
-  };
-
-  const setUploadInfo = () => {
-    setUrl(uploadInfo.url);
-    setNftName(uploadInfo.nftName);
-    setNftDescription(uploadInfo.nftDescription);
-    setOwner(uploadInfo.owner);
-    setFee(uploadInfo.fee);
+  const uploadData = () => {
+    fetch('http://' + serverIPP + '/upload', {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify({
+        url: globalVal.uploadUrl,
+        nftName: nftName,
+        nftDescription: nftDescription,
+        owner: userInfo.email,
+        fee: fee,
+        remark: remark,
+      }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(_res => {
+      if (_res.ok) {
+        _res.text().then(_resData => {
+          // console.log(resData);
+          let _resDataConverted = JSON.parse(_resData);
+          console.log(_resData);
+          Alert.alert(
+            '上传成功！',
+            '作品名称:' +
+              _resDataConverted.nftName +
+              '\n' +
+              '作品描述:' +
+              _resDataConverted.nftDescription +
+              '\n' +
+              '价格:' +
+              _resDataConverted.fee +
+              '\n' +
+              '备注:' +
+              _resDataConverted.remark,
+          );
+          // Alert.alert('上传成功！', resData.fileName);
+          console.log('FINISH: ' + globalVal.uploadUrl);
+          console.log('');
+          console.log('');
+        });
+      } else {
+        Alert.alert('请求失败', 'error', [
+          {text: '确定', onPress: () => console.log('OK Pressed!')},
+        ]);
+      }
+    });
   };
 
   const [fileResponse, setFileResponse] = useState([]);
@@ -129,7 +164,7 @@ export const UploadScreen = () => {
           <TextInput
             mode="outlined"
             label="作品描述"
-            style={{width: 300, marginVertical: 25}}
+            style={{width: 300}}
             // placeholder={
             //   fileResponse[0]?.name.length > 15
             //     ? fileResponse[0]?.name.substring(0, 15) + '...'
@@ -168,6 +203,31 @@ export const UploadScreen = () => {
             maxLength={50}
             onChangeText={_fee => {
               setFee(parseInt(_fee, 10));
+              // setUserName(_userName);
+              // setUserNameValidation(_userName.length >= 6);
+              // dispatch({type: 'userName', userName: userName});
+            }}
+            // left={<TextInput.Icon icon="account" />}
+            // left={<TextInput.Affix text="1" />}
+          />
+
+          <TextInput
+            mode="outlined"
+            label="备注"
+            style={{width: 300}}
+            // placeholder={
+            //   fileResponse[0]?.name.length > 15
+            //     ? fileResponse[0]?.name.substring(0, 15) + '...'
+            //     : fileResponse[0]?.name
+            // }
+            placeholder="提供给管理员审核"
+            placeholderTextColor={isThemeDark ? 'gray' : 'gray'}
+            underlineColor={isThemeDark ? 'gray' : 'rgba(47,100,125,0.26)'}
+            clearButtonMode="always"
+            selectionColor="skyblue"
+            maxLength={50}
+            onChangeText={_remark => {
+              setRemark(_remark);
               // setUserName(_userName);
               // setUserNameValidation(_userName.length >= 6);
               // dispatch({type: 'userName', userName: userName});
@@ -242,17 +302,21 @@ export const UploadScreen = () => {
           </Button>
           <Button
             labelStyle={{fontSize: 18}}
-            onPress={() => {
+            onPress={async () => {
+              if (!userInfo.email.length) {
+                Alert.alert('无法读取信息', '请先登录');
+                return;
+              }
+              // write_file(fileResponse[0]);
               console.log(fileResponse[0]);
               setUploadPercentage(0);
-              uploadFile(fileResponse[0]);
               let temp = setInterval(async () => {
                 try {
                   const value = await AsyncStorage.getItem('@uploadPercentage');
                   if (value !== null) {
                     // value previously stored
                     let pValue = JSON.parse(value);
-                    console.log(pValue.value);
+                    // console.log(pValue.value);
                     setUploadPercentage(pValue.value);
                     if (pValue.value === 1) {
                       clearTimeout(temp);
@@ -263,9 +327,19 @@ export const UploadScreen = () => {
                   console.log(e);
                 }
               }, 1);
-              setTimeout(() => {
-                clearTimeout(temp);
-              }, 3000);
+
+              await write_file(fileResponse[0]);
+
+              uploadFile(fileResponse[0]).then(() => {
+                if (fileResponse.length) {
+                  uploadData();
+                  setTimeout(() => {
+                    clearTimeout(temp);
+                  }, 3000);
+                } else {
+                  clearTimeout(temp);
+                }
+              });
             }}>
             上传
           </Button>

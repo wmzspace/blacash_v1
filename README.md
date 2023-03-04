@@ -17,7 +17,8 @@
 * 首页: home.tsx
 * 注册页: signup.tsx
 * 登录页: login.tsx
-* 聊天主页: main.tsx
+
+[//]: # (* 聊天主页: main.tsx)
 
 ### 样式文件
 
@@ -39,7 +40,7 @@
 
 ### 克隆该项目到本地
 
-git clone [https://github.com/wmzspace/yechat.git](https://github.com/wmzspace/blacash.git)
+git clone [https://github.com/wmzspace/blacash.git](https://github.com/wmzspace/blacash.git)
 
 ### IDEA工作区配置
 

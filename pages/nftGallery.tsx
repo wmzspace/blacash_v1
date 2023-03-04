@@ -64,7 +64,7 @@ export const NftGallery = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       <Searchbar
-        placeholder="Search"
+        placeholder="搜索"
         onChangeText={onChangeSearch}
         value={searchQuery}
         onSubmitEditing={() => {
@@ -72,8 +72,8 @@ export const NftGallery = () => {
         }}
         // theme={theme}
       />
-      <Text style={{textAlign: 'center', marginVertical: 10, fontSize: 20}}>
-        All Ntfs ({globalVal.allNfts?.length})
+      <Text style={{textAlign: 'center', marginVertical: 10, fontSize: 15}}>
+        全部作品 ({globalVal.allNfts?.length})
       </Text>
       <ScreenWrapper contentContainerStyle={styles.content}>
         {globalVal.allNfts?.map((nftImg, index) => {

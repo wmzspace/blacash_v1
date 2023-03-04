@@ -38,7 +38,7 @@ export const OwnedGallery = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       <Searchbar
-        placeholder="Search"
+        placeholder="搜索"
         onChangeText={onChangeSearch}
         value={searchQuery}
         onSubmitEditing={() => {
@@ -46,8 +46,8 @@ export const OwnedGallery = () => {
         }}
         // theme={theme}
       />
-      <Text style={{textAlign: 'center', marginVertical: 10, fontSize: 20}}>
-        Owned Ntfs ({userInfo.ownedNfts?.length})
+      <Text style={{textAlign: 'center', marginVertical: 10, fontSize: 15}}>
+        已拥有作品 ({userInfo.ownedNfts?.length})
       </Text>
       <ScreenWrapper contentContainerStyle={styles.content}>
         {userInfo.ownedNfts?.map((nftImg, index) => {

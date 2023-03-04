@@ -1,7 +1,8 @@
 export const globalVal = {
   allNfts: [],
   mainRefreshing: false,
-  uploadPercentage:0,
+  uploadPercentage: 0,
+  uploadUrl: '',
 };
 
 export const userInfo = {

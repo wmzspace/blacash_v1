@@ -1,12 +1,13 @@
 // require the module，导入react-native-fs库
 // var RNFS = require('react-native-fs');
 
-import RNFS from 'react-native-fs';
+import RNFS, {resumeDownload} from 'react-native-fs';
 import {serverIPP} from '../values/strings';
 import {Alert, PermissionsAndroid} from 'react-native';
 import {ProgressBar} from 'react-native-paper';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {globalVal, userInfo} from '../values/global';
 
 const requestPermission = async () => {
   try {
@@ -124,12 +125,12 @@ export const uploadFile = async fileInfo => {
     //     console.log(err);
     //   });
 
-    var uploadUrl = 'http://' + serverIPP + '/upload'; // For testing purposes, go to http://requestb.in/ and create your own link，测试上传路径
+    var uploadUrl = 'http://' + serverIPP + '/imgUrl'; // For testing purposes, go to http://requestb.in/ and create your own link，测试上传路径
     // var uploadUrl = RNFS.ExternalDirectoryPath + '/test.txt';
     // create an array of objects of the files you want to upload
     // 创建一个想要上传文件的数组
     // console.log(fileInfo.uri + '/' + fileInfo.name);
-    console.log(fileInfo);
+    // console.log(fileInfo);
     var files = [
       // {
       //   name: 'files',
@@ -155,7 +156,7 @@ export const uploadFile = async fileInfo => {
     //上传开始回调
     var uploadBegin = response => {
       var jobId = response.jobId;
-      console.log('');
+      // console.log('');
       console.log('UPLOAD HAS BEGUN! JobId: ' + jobId);
     };
     //上传进度回调
@@ -201,9 +202,12 @@ export const uploadFile = async fileInfo => {
     })
       .promise.then(async res => {
         //HTTP response响应
-
+        // console.log(res.body);
         if (res) {
-          Alert.alert('上传成功！', JSON.parse(res.body).originalname);
+          let resData = JSON.parse(res.body);
+          globalVal.uploadUrl = resData.url;
+
+          // fetch('http://' + serverIPP + '/upload');
           // try {
           //   await AsyncStorage.setItem(
           //     '@uploadPercentage',
