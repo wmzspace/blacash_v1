@@ -78,6 +78,7 @@ export const UploadScreen = () => {
               '备注:' +
               _resDataConverted.remark,
           );
+          // setUploadPercentage(1);
           // Alert.alert('上传成功！', resData.fileName);
           console.log('FINISH: ' + globalVal.uploadUrl);
           console.log('');
@@ -256,50 +257,17 @@ export const UploadScreen = () => {
           {/*<Button*/}
           {/*  labelStyle={{fontSize: 18}}*/}
           {/*  onPress={() => {*/}
-          {/*    fetch('http://' + serverIPP + '/upload', {*/}
-          {/*      method: 'POST',*/}
-          {/*      mode: 'cors',*/}
-          {/*      body: JSON.stringify({*/}
-          {/*        url: 'http://waa.cool:4000/public/nft_img/1676822586623-2134.jpg',*/}
-          {/*        nftName: '测试大象',*/}
-          {/*        nftDescription: '我是测试大象，真好玩',*/}
-          {/*        owner: userInfo.email,*/}
-          {/*        fee: 2.0,*/}
-          {/*      }),*/}
-          {/*      headers: {*/}
-          {/*        Accept: 'application/json',*/}
-          {/*        'Content-Type': 'application/x-www-form-urlencoded',*/}
-          {/*      },*/}
-          {/*    }).then(res => {*/}
-          {/*      if (res.ok) {*/}
-          {/*        res.text().then(resData => {*/}
-          {/*          // console.log(resData);*/}
-          {/*          Alert.alert('上传成功！', resData);*/}
-          {/*        });*/}
-          {/*      } else {*/}
-          {/*        Alert.alert('请求失败', 'error', [*/}
-          {/*          {text: '确定', onPress: () => console.log('OK Pressed!')},*/}
-          {/*        ]);*/}
-          {/*      }*/}
-          {/*    });*/}
+          {/*    write_file(fileResponse[0]);*/}
           {/*  }}>*/}
-          {/*  上传*/}
+          {/*  测试WriteFile*/}
           {/*</Button>*/}
-
-          <Button
-            labelStyle={{fontSize: 18}}
-            onPress={() => {
-              write_file(fileResponse[0]);
-            }}>
-            测试WriteFile
-          </Button>
-          <Button
-            labelStyle={{fontSize: 18}}
-            onPress={() => {
-              readFile();
-            }}>
-            测试ReadFile
-          </Button>
+          {/*<Button*/}
+          {/*  labelStyle={{fontSize: 18}}*/}
+          {/*  onPress={() => {*/}
+          {/*    readFile();*/}
+          {/*  }}>*/}
+          {/*  测试ReadFile*/}
+          {/*</Button>*/}
           <Button
             labelStyle={{fontSize: 18}}
             onPress={async () => {
@@ -307,37 +275,52 @@ export const UploadScreen = () => {
                 Alert.alert('无法读取信息', '请先登录');
                 return;
               }
+
               // write_file(fileResponse[0]);
               console.log(fileResponse[0]);
               setUploadPercentage(0);
-              let temp = setInterval(async () => {
-                try {
-                  const value = await AsyncStorage.getItem('@uploadPercentage');
-                  if (value !== null) {
-                    // value previously stored
-                    let pValue = JSON.parse(value);
-                    // console.log(pValue.value);
-                    setUploadPercentage(pValue.value);
-                    if (pValue.value === 1) {
-                      clearTimeout(temp);
-                    }
-                  }
-                } catch (e) {
-                  // error reading value
-                  console.log(e);
-                }
-              }, 1);
 
               await write_file(fileResponse[0]);
 
               uploadFile(fileResponse[0]).then(() => {
+                if (!globalVal.writePermission) {
+                  Alert.alert('无法读取信息', '请检查是否授权读写权限');
+                  console.log('Permission denied!');
+                  return;
+                }
                 if (fileResponse.length) {
-                  uploadData();
+                  const temp = setInterval(async () => {
+                    try {
+                      const value = await AsyncStorage.getItem(
+                        '@uploadPercentage',
+                      );
+                      if (value !== null) {
+                        // value previously stored
+                        let pValue = JSON.parse(value);
+                        // console.log(pValue.value);
+                        setUploadPercentage(pValue.value);
+                        if (pValue.value === 1) {
+                          clearTimeout(temp);
+                        }
+                      }
+                    } catch (e) {
+                      // error reading value
+                      console.log(e);
+                    }
+                  }, 1);
+                  let attemptUpload = setInterval(() => {
+                    if (globalVal.uploadUrl) {
+                      uploadData();
+                      clearInterval(attemptUpload);
+                    }
+                  }, 1000);
+
                   setTimeout(() => {
                     clearTimeout(temp);
+                    clearInterval(attemptUpload);
                   }, 3000);
                 } else {
-                  clearTimeout(temp);
+                  // clearTimeout(temp);
                 }
               });
             }}>

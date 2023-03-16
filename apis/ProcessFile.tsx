@@ -8,38 +8,47 @@ import {ProgressBar} from 'react-native-paper';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {globalVal, userInfo} from '../values/global';
-
-const requestPermission = async () => {
-  try {
-    const granted = await PermissionsAndroid.requestMultiple(
-      // PermissionsAndroid.PERMISSIONS.CAMERA,
-      [
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      ],
-    );
-    if (
-      granted['android.permission.READ_EXTERNAL_STORAG'] ===
-      PermissionsAndroid.RESULTS.GRANTED
-    ) {
-      console.log('READ_EXTERNAL_STORAGE 权限已获取');
-    }
-    if (
-      granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-      PermissionsAndroid.RESULTS.GRANTED
-    ) {
-      console.log('WRITE_EXTERNAL_STORAGE 权限已获取');
-    }
-    // if (
-    //   granted['android.permission.USE_SIP'] ===
-    //   PermissionsAndroid.RESULTS.GRANTED
-    // ) {
-    //   console.log('USE_SIP 权限已获取');
-    // }
-  } catch (err) {
-    console.log(err);
-  }
-};
+// async () => {
+// const requestPermission = new Promise(async (resolve, reject) => {
+//   try {
+//     const granted = await PermissionsAndroid.requestMultiple(
+//       // PermissionsAndroid.PERMISSIONS.CAMERA,
+//       [
+//         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+//         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+//       ],
+//     );
+//     if (
+//       granted['android.permission.READ_EXTERNAL_STORAG'] ===
+//       PermissionsAndroid.RESULTS.GRANTED
+//     ) {
+//       console.log('READ_EXTERNAL_STORAGE 权限已获取');
+//     }
+//     if (
+//       granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+//       PermissionsAndroid.RESULTS.GRANTED
+//     ) {
+//       resolve(true);
+//       console.log('WRITE_EXTERNAL_STORAGE 权限已获取');
+//     } else {
+//       reject('WRITE_EXTERNAL_STORAGE 权限未获取');
+//       // console.log('WRITE_EXTERNAL_STORAGE 权限未获取');
+//     }
+//
+//     // if (
+//     //   granted['android.permission.USE_SIP'] ===
+//     //   PermissionsAndroid.RESULTS.GRANTED
+//     // ) {
+//     //   console.log('USE_SIP 权限已获取');
+//     // }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// })
+//   .then(() => {})
+//   .catch(error => {
+//     console.log(error);
+//   });
 
 export function readFile() {
   console.log('');
@@ -107,134 +116,148 @@ export function readFile() {
 
 export const uploadFile = async fileInfo => {
   if (fileInfo) {
-    requestPermission();
-    // .then(r => console.log(r));
-    // console.log('DocumentDirectoryPath: ' + RNFS.DocumentDirectoryPath);
-    // let rnfsPath =
-    //   Platform.OS === 'ios'
-    //     ? RNFS.LibraryDirectoryPath
-    //     : RNFS.ExternalDirectoryPath;
-    // console.log('ExternalDirectoryPath: ' + rnfsPath);
-    // const path = rnfsPath + '/test.txt';
-    // //write the file
-    // RNFS.writeFile(path, 'test', 'utf8')
-    //   .then(success => {
-    //     alert('path=' + path);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
-
-    var uploadUrl = 'http://' + serverIPP + '/imgUrl'; // For testing purposes, go to http://requestb.in/ and create your own link，测试上传路径
-    // var uploadUrl = RNFS.ExternalDirectoryPath + '/test.txt';
-    // create an array of objects of the files you want to upload
-    // 创建一个想要上传文件的数组
-    // console.log(fileInfo.uri + '/' + fileInfo.name);
-    // console.log(fileInfo);
-    var files = [
-      // {
-      //   name: 'files',
-      //   filename: 'test.txt',
-      //   filepath: RNFS.ExternalDirectoryPath + '/test.txt',
-      //   filetype: 'json',
-      //   // filetype: 'audio/x-m4a',
-      // },
-      {
-        name: 'files',
-        filename: fileInfo.name,
-        filepath: RNFS.ExternalDirectoryPath + '/' + fileInfo.name,
-        filetype: 'image/jpeg',
-        // filetype: 'audio/x-m4a',
-      },
-      // {
-      //   name: 'test2',
-      //   filename: 'test2.w4a',
-      //   filepath: RNFS.DocumentDirectoryPath + '/test2.w4a',
-      //   filetype: 'audio/x-m4a',
-      // },
-    ];
-    //上传开始回调
-    var uploadBegin = response => {
-      var jobId = response.jobId;
-      // console.log('');
-      console.log('UPLOAD HAS BEGUN! JobId: ' + jobId);
-    };
-    //上传进度回调
-    const uploadProgress = async response => {
-      // console.clear();
-      try {
-        await AsyncStorage.setItem(
-          '@uploadPercentage',
-          JSON.stringify({
-            value:
-              // Math.floor(
-              response.totalBytesSent / response.totalBytesExpectedToSend,
-            // ),
-          }),
-        );
-        // console.log('Write!!!');
-      } catch (e) {
-        // saving error
+    await new Promise(async (resolve, reject) => {
+      const granted = await PermissionsAndroid.requestMultiple(
+        // PermissionsAndroid.PERMISSIONS.CAMERA,
+        [
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        ],
+      );
+      if (
+        granted['android.permission.READ_EXTERNAL_STORAG'] ===
+        PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log('READ_EXTERNAL_STORAGE 权限已获取');
+      }
+      if (
+        granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+        PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        globalVal.writePermission = true;
+        console.log('WRITE_EXTERNAL_STORAGE 权限已获取');
+        resolve(true);
+      } else {
+        globalVal.writePermission = false;
+        reject('WRITE_EXTERNAL_STORAGE 权限未获取');
+        // console.log('WRITE_EXTERNAL_STORAGE 权限未获取');
       }
 
-      // console.log('UPLOAD IS ' + percentage + '% DONE!');
-    };
-
-    // upload files
-    //执行文件上传
-    RNFS.uploadFiles({
-      toUrl: uploadUrl, //文件上传路径
-      files: files, //上传的文件数组
-      method: 'POST', //HTTP请求方法
-      headers: {
-        Accept: 'application/json', //请求header
-      },
-
-      // fields: {
-      //   hello: 'world',
-      //   name: 'file',
-      // },
-      // fields: {
-      //   hello: 'world',
-      // },
-      begin: uploadBegin, //上传开始回调
-      progress: uploadProgress, //上传进度回调
+      // if (
+      //   granted['android.permission.USE_SIP'] ===
+      //   PermissionsAndroid.RESULTS.GRANTED
+      // ) {
+      //   console.log('USE_SIP 权限已获取');
+      // }
     })
-      .promise.then(async res => {
-        //HTTP response响应
-        // console.log(res.body);
-        if (res) {
-          let resData = JSON.parse(res.body);
-          globalVal.uploadUrl = resData.url;
-          // console.log('TestUrl:' + globalVal.uploadUrl);
-          // fetch('http://' + serverIPP + '/upload');
-          // try {
-          //   await AsyncStorage.setItem(
-          //     '@uploadPercentage',
-          //     JSON.stringify({
-          //       value: 1,
-          //       // Math.floor(
-          //       // ),
-          //     }),
-          //   );
-          //   // console.log('Write!!!');
-          // } catch (e) {
-          //   // saving error
-          // }
-        }
-        // console.log(response.body);
-        // if (response.statusCode === 200) {
-        //   console.log('FILES UPLOADED!'); // response.statusCode状态码, response.headers响应header, response.body 响应body
-        // } else {
-        //   console.log('SERVER ERROR');
-        // }
+      .then(res => {
+        console.log('test' + res);
+        var uploadUrl = 'http://' + serverIPP + '/imgUrl'; // For testing purposes, go to http://requestb.in/ and create your own link，测试上传路径
+        var files = [
+          // {
+          //   name: 'files',
+          //   filename: 'test.txt',
+          //   filepath: RNFS.ExternalDirectoryPath + '/test.txt',
+          //   filetype: 'json',
+          //   // filetype: 'audio/x-m4a',
+          // },
+          {
+            name: 'files',
+            filename: fileInfo.name,
+            filepath: RNFS.ExternalDirectoryPath + '/' + fileInfo.name,
+            filetype: 'image/jpeg',
+            // filetype: 'audio/x-m4a',
+          },
+          // {
+          //   name: 'test2',
+          //   filename: 'test2.w4a',
+          //   filepath: RNFS.DocumentDirectoryPath + '/test2.w4a',
+          //   filetype: 'audio/x-m4a',
+          // },
+        ];
+        //上传开始回调
+        var uploadBegin = response => {
+          var jobId = response.jobId;
+          // console.log('');
+          console.log('UPLOAD HAS BEGUN! JobId: ' + jobId);
+        };
+        const uploadProgress = async response => {
+          // console.clear();
+          try {
+            await AsyncStorage.setItem(
+              '@uploadPercentage',
+              JSON.stringify({
+                value:
+                  // Math.floor(
+                  response.totalBytesSent / response.totalBytesExpectedToSend,
+                // ),
+              }),
+            );
+            // console.log('Write!!!');
+          } catch (e) {
+            // saving error
+          }
+
+          // console.log('UPLOAD IS ' + percentage + '% DONE!');
+        };
+        RNFS.uploadFiles({
+          toUrl: uploadUrl, //文件上传路径
+          files: files, //上传的文件数组
+          method: 'POST', //HTTP请求方法
+          headers: {
+            Accept: 'application/json', //请求header
+          },
+
+          // fields: {
+          //   hello: 'world',
+          //   name: 'file',
+          // },
+          // fields: {
+          //   hello: 'world',
+          // },
+          begin: uploadBegin, //上传开始回调
+          progress: uploadProgress, //上传进度回调
+        })
+          .promise.then(res2 => {
+            //HTTP response响应
+            // console.log(res.body);
+            if (res2) {
+              let resData = JSON.parse(res2.body);
+              // console.log('TEST:' + resData.url);
+              globalVal.uploadUrl = resData.url;
+              // console.log('TestUrl:' + globalVal.uploadUrl);
+              // fetch('http://' + serverIPP + '/upload');
+              // try {
+              //   await AsyncStorage.setItem(
+              //     '@uploadPercentage',
+              //     JSON.stringify({
+              //       value: 1,
+              //       // Math.floor(
+              //       // ),
+              //     }),
+              //   );
+              //   // console.log('Write!!!');
+              // } catch (e) {
+              //   // saving error
+              // }
+            }
+            // console.log(response.body);
+            // if (response.statusCode === 200) {
+            //   console.log('FILES UPLOADED!'); // response.statusCode状态码, response.headers响应header, response.body 响应body
+            // } else {
+            //   console.log('SERVER ERROR');
+            // }
+          })
+          .catch(err => {
+            //HTTP请求异常
+            if (err.description === 'cancelled') {
+              // cancelled by user
+            }
+            console.log(err);
+          });
       })
-      .catch(err => {
-        //HTTP请求异常
-        if (err.description === 'cancelled') {
-          // cancelled by user
-        }
-        console.log(err);
+      .catch(error => {
+        console.log(error);
       });
   } else {
     Alert.alert('错误', '请先选择作品');

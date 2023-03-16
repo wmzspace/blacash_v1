@@ -82,7 +82,7 @@ const MainScreen = ({route, navigation}) => {
     userInfo[item] = route.params[item];
     // console.log(route.params[item]);
   }
-  console.log(userInfo);
+  // console.log(userInfo);
 
   const theme = useTheme();
   const {toggleTheme, isThemeDark, toggleThemeStyle, isMD2Theme} =

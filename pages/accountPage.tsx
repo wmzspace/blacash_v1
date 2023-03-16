@@ -17,19 +17,29 @@ import {getNftImgs} from '../apis/api';
 import styles from '../styles';
 
 export const AccountScreen = () => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded1, setExpanded1] = React.useState(false);
+  const [expanded2, setExpanded2] = React.useState(false);
   return (
-    <View>
-      <Text>!</Text>
+    <View style={[styles.container, {padding: 10}]}>
       {/*<List.Section title="">*/}
       <List.Accordion
         title="注册信息"
-        expanded={expanded}
+        expanded={expanded1}
         onPress={() => {
-          setExpanded(!expanded);
+          setExpanded1(!expanded1);
         }}>
-        <List.Item title="用户名:" description={userInfo.name} />
-        <List.Item title="邮箱:" description={userInfo.email} />
+        <List.Item title="用户名: " description={userInfo?.name} />
+        <List.Item title="邮箱: " description={userInfo?.email} />
+        <List.Item title="定位: " description={userInfo?.location} />
+      </List.Accordion>
+      <List.Accordion
+        title="账户信息"
+        expanded={expanded2}
+        onPress={() => {
+          setExpanded2(!expanded2);
+        }}>
+        <List.Item title="钱包余额:" description={userInfo?.coin} />
+        <List.Item title="钱包地址:" description={userInfo?.address} />
       </List.Accordion>
 
       {/*<List.Accordion title="controlled list" expanded={expanded}>*/}
