@@ -1,3 +1,6 @@
+// const {serverIPP} = require('./values/strings');
+// import {serverIPP} from './values/strings';
+
 // ALTER TABLE users AUTO_INCREMENT = 2
 // ALTER TABLE messages AUTO_INCREMENT = 1
 console.clear();
@@ -43,6 +46,7 @@ const mysqlInfo = {
 };
 
 var mysql = require('mysql');
+
 const connection = mysql.createConnection({
   host: mysqlInfo.host,
   port: mysqlInfo.port,
@@ -179,7 +183,7 @@ app.post('/login', function (req, res) {
       if (_user.email === req.body.email) {
         if (_user.password === req.body.password) {
           console.log('登录成功!', _user.name);
-          res.end('1');
+          res.end(JSON.stringify(_user));
         } else {
           res.end('0');
         }
@@ -341,6 +345,17 @@ app.post('/upload', (req, res) => {
 //   res.end(0);
 // });
 
+// app.post('/userInfo', (req, res) => {
+//   connection.query('SELECT * FROM admin', function (err, result) {
+//     if (err) {
+//       console.log('[SELECT ERROR] - ', err.message);
+//       return;
+//     }
+//
+//     res.end(JSON.stringify(result));
+//   });
+// });
+
 app.listen(8089, function () {
-  console.log('应用实例，访问地址为 http://127.0.0.1:8089');
+  console.log('应用实例，访问地址为 http://43.143.213.226:8089');
 });

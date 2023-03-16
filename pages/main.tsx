@@ -70,9 +70,19 @@ export const PhotoGallery = ({route}: Route) => {
 
 const MainScreen = ({route, navigation}) => {
   globalVal.uploadUrl = '';
+  // let tempInfo = route.params;
+  // console.log(route.params);
 
-  const {email} = route.params;
-  userInfo.email = email;
+  // const {email} = route.params;
+  // userInfo.email = email;
+
+  // userInfo = route.params;
+
+  for (let item in route.params) {
+    userInfo[item] = route.params[item];
+    // console.log(route.params[item]);
+  }
+  console.log(userInfo);
 
   const theme = useTheme();
   const {toggleTheme, isThemeDark, toggleThemeStyle, isMD2Theme} =

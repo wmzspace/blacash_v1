@@ -69,7 +69,6 @@ export default function LoginScreen({navigation}) {
             //.formData()    // FormData
             .then(responseData => {
               //从后端返回的数据(res.end())
-
               switch (responseData) {
                 case '-1':
                   Alert.alert('登陆失败', '该用户不存在', [
@@ -82,15 +81,19 @@ export default function LoginScreen({navigation}) {
                     {text: '确定', onPress: () => {}},
                   ]);
                   break;
-                case '1':
+                default:
+                  let resDict = JSON.parse(responseData);
                   Alert.alert('登陆成功', `欢迎您: ${userName}`, [
                     {
                       text: '确定',
                       onPress: () => {
-                        navigation.navigate('Main', {
-                          email: userName,
-                          needRefresh: true,
-                        });
+                        navigation.navigate(
+                          'Main',
+                          resDict,
+                          //     {
+                          //   // needRefresh: true,
+                          // }
+                        );
                       },
                     },
                   ]);
@@ -222,6 +225,26 @@ export default function LoginScreen({navigation}) {
         </TouchableHighlight>
         <Button
           onPress={() => {
+            // await fetch(serverIPP + '/userInfo', {
+            //   method: 'POST',
+            //   mode: 'cors',
+            //   headers: {
+            //     'content-Type': 'json',
+            //     Accept: 'text',
+            //   },
+            // })
+            //   .then(res => {
+            //     if (res) {
+            //       res.json().then(resData => {
+            //         console.log(resData);
+            //       });
+            //     } else {
+            //       console.log('Error request');
+            //     }
+            //   })
+            //   .catch(e => {
+            //     console.log(e.message);
+            //   });
             navigation.navigate('Main', {
               email: userName,
             });

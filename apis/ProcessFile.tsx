@@ -206,7 +206,7 @@ export const uploadFile = async fileInfo => {
         if (res) {
           let resData = JSON.parse(res.body);
           globalVal.uploadUrl = resData.url;
-
+          // console.log('TestUrl:' + globalVal.uploadUrl);
           // fetch('http://' + serverIPP + '/upload');
           // try {
           //   await AsyncStorage.setItem(
